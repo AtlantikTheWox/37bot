@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.Commands;
@@ -53,13 +54,17 @@ namespace botof37s.Services
             {
                 return;
             }
-            
+
+            if(rawMessage.Content == _config["Prefix"].Replace(" ",""))
+            {
+
+            }
+
             // sets the argument position away from the prefix we set
             var argPos = 0;
             
             if (rawMessage.Channel.GetType().ToString() == "Discord.WebSocket.SocketDMChannel")
             {
-                Console.WriteLine("issa DM");
                 goto dm;
             }
             // get prefix from the configuration file
