@@ -22,6 +22,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using botof37s.Services;
+using botof37s.Modules;
 using Discord.Commands;
 
 namespace botof37s
@@ -29,11 +30,13 @@ namespace botof37s
     class Program
     {
         // setup our fields we assign later
-        private readonly IConfiguration _config;
+        public readonly IConfiguration _config;
         public DiscordSocketClient _client;
 
         static void Main(string[] args)
         {
+            if (!Directory.Exists("db")) Directory.CreateDirectory("db");
+            if (!Directory.Exists("leaderboard")) Directory.CreateDirectory("leaderboard");
             new Program().MainAsync().GetAwaiter().GetResult();
         }
 
@@ -69,6 +72,16 @@ namespace botof37s
 
                 // we get the CommandHandler class here and call the InitializeAsync method to start things up for the CommandHandler service
                 await services.GetRequiredService<CommandHandler>().InitializeAsync();
+                if (File.Exists("db/lastmessage.37"))
+                {
+                    var last37 = Convert.ToDateTime(File.ReadAllText("db/lastmessage.37"));
+                    TimeSpan ts = DateTime.UtcNow - last37;
+                    if (ts.TotalMinutes < Int32.Parse(_config["Frequency"]))
+                    {
+                        cooldown cooldown = new cooldown();
+                        cooldown.CooldownAsync((int)(int.Parse(_config["Frequency"]) - ts.TotalMinutes), _client);
+                    }
+                }
 
                 await Task.Delay(-1);
             }

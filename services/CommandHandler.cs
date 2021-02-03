@@ -14,9 +14,9 @@ namespace botof37s.Services
     public class CommandHandler
     {
         // setup fields to be set later in the constructor
-        private readonly IConfiguration _config;
+        public readonly IConfiguration _config;
         private readonly CommandService _commands;
-        private readonly DiscordSocketClient _client;
+        public DiscordSocketClient _client;
         private readonly IServiceProvider _services;
 
         public CommandHandler(IServiceProvider services)
@@ -55,15 +55,15 @@ namespace botof37s.Services
                 return;
             }
 
-            if(rawMessage.Content == _config["Prefix"].Replace(" ",""))
-            {
-
-            }
+            
 
             // sets the argument position away from the prefix we set
             var argPos = 0;
-            
-            if (rawMessage.Channel.GetType().ToString() == "Discord.WebSocket.SocketDMChannel")
+            if (rawMessage.Content == _config["Prefix"].Replace(" ", ""))
+            {
+                goto dm;
+            }
+            if (rawMessage.Channel.GetType().ToString() == "Discord.WebSocket.SocketDMChannel"&& !message.Content.StartsWith(_config["Prefix"]) && !message.Content.StartsWith(_client.CurrentUser.ToString()))
             {
                 goto dm;
             }
@@ -103,6 +103,12 @@ namespace botof37s.Services
 
             // failure scenario, let's let the user know
             await context.Channel.SendMessageAsync($"Sorry, {context.User.Username}... something went wrong -> [{result}]!");
+        }
+        public async Task CooldownStatusAsync(int time)
+        {
+            await _client.SetStatusAsync(UserStatus.DoNotDisturb);
+            await Task.Delay(1000 * 60 * time);
+            await _client.SetStatusAsync(UserStatus.Online);
         }
     }
 }
