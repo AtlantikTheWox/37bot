@@ -69,19 +69,21 @@ namespace botof37s
                 // this is where we get the Token value from the configuration file, and start the bot
                 await client.LoginAsync(TokenType.Bot, _config["Token"]);
                 await client.StartAsync();
-
-                // we get the CommandHandler class here and call the InitializeAsync method to start things up for the CommandHandler service
-                await services.GetRequiredService<CommandHandler>().InitializeAsync();
                 if (File.Exists("db/lastmessage.37"))
                 {
                     var last37 = Convert.ToDateTime(File.ReadAllText("db/lastmessage.37"));
                     TimeSpan ts = DateTime.UtcNow - last37;
+                    Console.WriteLine("Timespan: "+ts);
                     if (ts.TotalMinutes < Int32.Parse(_config["Frequency"]))
                     {
-                        cooldown cooldown = new cooldown();
-                        cooldown.CooldownAsync((int)(int.Parse(_config["Frequency"]) - ts.TotalMinutes), _client);
+                        Console.WriteLine("Cooldown Triggered");
+                        Cooldown cooldown = new Cooldown();
+                        cooldown.CooldownAsync((int)(int.Parse(_config["Frequency"])*1000*60 - ts.TotalMilliseconds), _client);
                     }
                 }
+                // we get the CommandHandler class here and call the InitializeAsync method to start things up for the CommandHandler service
+                await services.GetRequiredService<CommandHandler>().InitializeAsync();
+                
 
                 await Task.Delay(-1);
             }

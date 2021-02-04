@@ -25,7 +25,6 @@ namespace botof37s.Modules
         [Alias("37")]
         public async Task ThirtysevenCommand()
         {
-            Console.WriteLine("command called");
             DateTime last37 =new DateTime();
             IConfiguration _config;
 
@@ -49,13 +48,15 @@ namespace botof37s.Modules
                 File.WriteAllText("db/lastmessage.37", DateTime.UtcNow.ToString());
                 File.WriteAllText($"leaderboard/{Context.User.Id}.37", (personalcount + 1).ToString());
                 File.WriteAllText("db/last37uname.37", Context.User.Username);
-                cooldown cooldown = new cooldown();
-                cooldown.CooldownAsync(int.Parse(_config["Frequency"]), (DiscordSocketClient)Context.Client);
-                var replies = new List<string>();
-                replies.Add($"<@{Context.User.Id}> Coming right up!");
-                replies.Add($"@{Context.User.Id}> As you wish!");
-                replies.Add($"@{Context.User.Id}> I cant believe its not spam!");
-                replies.Add($"@{Context.User.Id}> Ugh, fine!");
+                Cooldown cooldown = new Cooldown();
+                cooldown.CooldownAsync(Int32.Parse(_config["Frequency"])*60*1000, (DiscordSocketClient)Context.Client);
+                var replies = new List<string>
+                {
+                    $"<@{Context.User.Id}> Coming right up!",
+                    $"<@{Context.User.Id}> As you wish!",
+                    $"<@{Context.User.Id}> I cant believe its not spam!",
+                    $"<@{Context.User.Id}> Ugh, fine!"
+                };
                 var answer = replies[new Random().Next(replies.Count - 1)];
                 await Context.Channel.SendMessageAsync(answer);
             }
@@ -71,13 +72,18 @@ namespace botof37s.Modules
 
         }
     }
-    public class cooldown
+    public class Cooldown
     {
         public async Task CooldownAsync(int time, DiscordSocketClient _client)
         {
+            Console.WriteLine("Time: " + time);
+            Console.WriteLine("1");
             await _client.SetStatusAsync(UserStatus.DoNotDisturb);
-            await Task.Delay(1000 * 60 * time);
+            Console.WriteLine("2");
+            await Task.Delay(time);
+            Console.WriteLine("3");
             await _client.SetStatusAsync(UserStatus.Online);
+            Console.WriteLine("4");
         }
     }
 
