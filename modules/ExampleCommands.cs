@@ -41,13 +41,15 @@ namespace botof37s.Modules
             var embed = new EmbedBuilder();
 
             // now to create a list of possible replies
-            var replies = new List<string>();
+            var replies = new List<string>
+            {
 
-            // add our possible replies
-            replies.Add("yes");
-            replies.Add("no");
-            replies.Add("maybe");
-            replies.Add("hazzzzy....");
+                // add our possible replies
+                "yes",
+                "no",
+                "maybe",
+                "hazzzzy...."
+            };
 
             // time to add some options to the embed (like color and title)
             embed.WithColor(new Color(0, 255, 0));

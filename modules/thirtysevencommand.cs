@@ -20,12 +20,12 @@ namespace botof37s.Modules
 
     public class Thirtysevencommand : ModuleBase
     {
-        
+
         [Command("/37")]
         [Alias("37")]
         public async Task ThirtysevenCommand()
         {
-            DateTime last37 =new DateTime();
+            DateTime last37 = new DateTime();
             IConfiguration _config;
 
             var _builder = new ConfigurationBuilder().
@@ -41,15 +41,22 @@ namespace botof37s.Modules
             if (ts.TotalMinutes >= Int32.Parse(_config["Frequency"]))
             {
                 int personalcount = 0;
+                int counter = 0;
                 if (File.Exists($"leaderboard/{Context.User.Id}.37"))
                 {
                     personalcount = Int32.Parse(File.ReadAllText($"leaderboard/{Context.User.Id}.37"));
                 }
+                if (File.Exists("db/counter.37"))
+                {
+                    counter = int.Parse(File.ReadAllText("db/counter.37"));
+                }
                 File.WriteAllText("db/lastmessage.37", DateTime.UtcNow.ToString());
                 File.WriteAllText($"leaderboard/{Context.User.Id}.37", (personalcount + 1).ToString());
-                File.WriteAllText("db/last37uname.37", Context.User.Username);
+                File.WriteAllText("db/last37id.37", Context.User.Id.ToString());
+                File.WriteAllText("db/counter.37", (counter + 1).ToString());
+
                 Cooldown cooldown = new Cooldown();
-                cooldown.CooldownAsync(Int32.Parse(_config["Frequency"])*60*1000, (DiscordSocketClient)Context.Client);
+                cooldown.CooldownAsync(Int32.Parse(_config["Frequency"]) * 60 * 1000, (DiscordSocketClient)Context.Client);
                 var replies = new List<string>
                 {
                     $"<@{Context.User.Id}> Coming right up!",
@@ -63,10 +70,25 @@ namespace botof37s.Modules
             else
             {
                 string last37uname = "[REDACTED]";
-                if (File.Exists("db/last37uname.37"))
+                if (File.Exists("db/last37id.37"))
                 {
-                    last37uname = File.ReadAllText("db/last37uname.37");
+                    var _client = (DiscordSocketClient)Context.Client;
+                    var guildList = _client.Guilds;
+                    foreach (SocketGuild guild in guildList)
+                    {
+
+                        foreach (SocketUser user in guild.Users)
+                        {
+                            if (Convert.ToString(user.Id) == File.ReadAllText("db/last37id.37"))
+                            {
+                                last37uname = user.Username;
+                                goto stop;
+                            }
+                        }
+
+                    }
                 }
+            stop:;
                 await Context.Channel.SendMessageAsync($"I'm sorry <@{Context.User.Id}>, but you will have to wait another {Math.Floor(Int32.Parse(_config["Frequency"]) - ts.TotalMinutes)} minutes and {60 - ts.Seconds} seconds. The last 37 was claimed by {last37uname}");
             }
 

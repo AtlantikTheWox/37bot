@@ -88,7 +88,7 @@ namespace botof37s.Services
             // if a command isn't found, log that info to console and exit this method
             if (!command.IsSpecified)
             {
-                System.Console.WriteLine($"Command failed to execute for [{context.User.Username}] <-> [{result.ErrorReason}]!");
+                await context.Channel.SendMessageAsync($"<@{context.User.Id}> Dafuq you want?");
                 return;
             }
 
@@ -102,13 +102,8 @@ namespace botof37s.Services
 
 
             // failure scenario, let's let the user know
-            await context.Channel.SendMessageAsync($"Sorry, {context.User.Username}... something went wrong -> [{result}]!");
+            await context.Channel.SendMessageAsync($"<@{context.User.Id}> something went wrong -> [{result}]!");
         }
-        public async Task CooldownStatusAsync(int time)
-        {
-            await _client.SetStatusAsync(UserStatus.DoNotDisturb);
-            await Task.Delay(1000 * 60 * time);
-            await _client.SetStatusAsync(UserStatus.Online);
-        }
+        
     }
 }
