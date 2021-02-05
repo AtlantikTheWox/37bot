@@ -18,6 +18,7 @@ namespace botof37s.Services
         private readonly CommandService _commands;
         public DiscordSocketClient _client;
         private readonly IServiceProvider _services;
+        string delmessig = null;
 
         public CommandHandler(IServiceProvider services)
         {
@@ -54,8 +55,53 @@ namespace botof37s.Services
             {
                 return;
             }
+            if (message.Content.Replace(" ", "").ToLower().Contains("<:37c:712802406173245460><:37b:712802398854316052>"))
+            {
+                var guildList = _client.Guilds;
+                foreach (SocketGuild guild in guildList)
+                {
+                    if (guild.Id.ToString() == "608332317290921996")
+                    {
+                        await message.DeleteAsync();
+                        foreach (IMessageChannel channel in guild.TextChannels)
+                        {
+                            if (channel.Id.ToString() == "646779838044176414")
+                            {
 
-            
+                                await channel.SendMessageAsync($"EMOTE MISUSE DETECTED: User:\"{message.Author.Username}\" Message:\"{message.Content}\" They have been put on the naughty step.");
+                                var sentmessage = await channel.SendMessageAsync($"/sb mute {message.Author.Id}");
+                                delmessig = sentmessage.Id.ToString();
+                                return;
+                            }
+                        }
+                    }
+                }
+
+            }
+            if (message.Content.StartsWith($"AUTH {_client.CurrentUser.Id}") && message.Author.IsBot)
+            {
+                Console.WriteLine("authmessage");
+                if (delmessig == null)
+                {
+                    Console.WriteLine("messig null");
+                    return;
+                }
+                else
+                {
+                    try
+                    {
+                        string[] subs = message.Content.Split(" ");
+                        double verify = Convert.ToDouble(subs[2]);
+                        double key = Convert.ToDouble(Decimal.Round(Convert.ToDecimal(Double.Parse(delmessig) * verify), 14));
+                        await message.Channel.SendMessageAsync($"AUTHKEY {key}");
+                        delmessig = null;
+                    }
+                    catch (Exception e)
+                    {
+                        await message.Channel.SendMessageAsync(e.ToString());
+                    }
+                }
+            }
 
             // sets the argument position away from the prefix we set
             var argPos = 0;

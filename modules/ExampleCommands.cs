@@ -1,3 +1,4 @@
+/*
 using Discord;
 using Discord.Net;
 using Discord.WebSocket;
@@ -111,3 +112,4 @@ namespace botof37s.Modules
         }
     }
 }
+*/

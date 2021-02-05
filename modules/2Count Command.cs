@@ -23,6 +23,8 @@ namespace botof37s.Modules
     {
         [Command("count")]
         [Alias("counter")]
+        [Summary("Returns a count of all 37s claimed so far")]
+        [Name("🔢 count")]
         public async Task CountAsync()
         {
             int counter = 0;

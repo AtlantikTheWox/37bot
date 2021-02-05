@@ -21,8 +21,9 @@ namespace botof37s.Modules
     public class Thirtysevencommand : ModuleBase
     {
 
-        [Command("/37")]
-        [Alias("37")]
+        [Command("37")]
+        [Alias("/37")]
+        [Summary("Claims a 37")]
         public async Task ThirtysevenCommand()
         {
             DateTime last37 = new DateTime();

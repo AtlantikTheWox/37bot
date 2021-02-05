@@ -6,7 +6,7 @@ namespace colorpicker
 {
     public class Colorpicker
     {
-        public int Pick()
+        public uint Pick()
         {
             int pick = 0;
             if (File.Exists("db/color.37"))
@@ -14,7 +14,7 @@ namespace colorpicker
                 pick = int.Parse(File.ReadAllText("db/color.37"));
                 Console.WriteLine("Henlo");
             }
-            List<int> color = new List<int>
+            List<uint> color = new List<uint>
             {
                 16711704,
                 16753964,
