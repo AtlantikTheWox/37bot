@@ -26,6 +26,7 @@ namespace botof37s.Modules
         [Alias("leaderboard")]
         [Summary("Displays the leaderboard")]
         [Name("📑 ranking")]
+        [Remarks("all")]
         public async Task LeaderboardCommand()
         {
             System.IO.DirectoryInfo di = new DirectoryInfo("leaderboard");

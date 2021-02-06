@@ -69,6 +69,7 @@ namespace botof37s
                 // this is where we get the Token value from the configuration file, and start the bot
                 await client.LoginAsync(TokenType.Bot, _config["Token"]);
                 await client.StartAsync();
+                // sets the bots status indicator to "Do not disturb" if its still on cooldown
                 if (File.Exists("db/lastmessage.37"))
                 {
                     var last37 = Convert.ToDateTime(File.ReadAllText("db/lastmessage.37"));

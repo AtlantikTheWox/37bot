@@ -38,6 +38,14 @@ namespace colorpicker
                 16777214,
                 8388736
             };
+            if (File.Exists("db/additionalcolors.37"))
+            {
+                var add = File.ReadAllLines("db/additionalcolors.37");
+                foreach(string newcolor in add)
+                {
+                    color.Add(uint.Parse(newcolor));
+                }
+            }
             if (pick >= color.Count)
                 pick = 0;
             Console.WriteLine(pick);

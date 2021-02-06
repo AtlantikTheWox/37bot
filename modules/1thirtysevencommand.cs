@@ -24,6 +24,7 @@ namespace botof37s.Modules
         [Command("37")]
         [Alias("/37")]
         [Summary("Claims a 37")]
+        [Remarks("all")]
         public async Task ThirtysevenCommand()
         {
             DateTime last37 = new DateTime();
@@ -99,14 +100,9 @@ namespace botof37s.Modules
     {
         public async Task CooldownAsync(int time, DiscordSocketClient _client)
         {
-            Console.WriteLine("Time: " + time);
-            Console.WriteLine("1");
             await _client.SetStatusAsync(UserStatus.DoNotDisturb);
-            Console.WriteLine("2");
             await Task.Delay(time);
-            Console.WriteLine("3");
             await _client.SetStatusAsync(UserStatus.Online);
-            Console.WriteLine("4");
         }
     }
 

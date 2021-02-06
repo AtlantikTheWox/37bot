@@ -1,8 +1,4 @@
-﻿
-
-
-
-using Discord;
+﻿using Discord;
 using Discord.Net;
 using Discord.WebSocket;
 using Discord.Commands;
@@ -16,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using System.Data;
 using Discord.Rest;
 using Microsoft.Extensions.Configuration.Json;
-using botof37s;
+using botof37s.services;
 using colorpicker;
 
 namespace botof37s.Modules
@@ -33,6 +29,7 @@ namespace botof37s.Modules
         [Alias("manual")]
         [Name("❓ help")]
         [Summary("Displays this window")]
+        [Remarks("all")]
         public async Task Help()
         {
             
@@ -42,8 +39,36 @@ namespace botof37s.Modules
             foreach (CommandInfo command in commands)
             {
                 // Get the command Summary attribute information
-                string embedFieldText = command.Summary ?? "No description available\n";
-                embedBuilder.AddField(command.Name, embedFieldText);
+                if (command.Remarks == "all") 
+                {
+                    string embedFieldText = command.Summary ?? "No description available\n";
+                    embedBuilder.AddField(command.Name, embedFieldText,true);
+                }
+            }
+            Authorisationcheck check = new Authorisationcheck();
+            if (check.Check(Context.User.Id,_config))
+            {
+                embedBuilder.AddField("Admin Commands", "You have access to these command because you're authorized", false);
+                foreach(CommandInfo command in commands)
+                {
+                    if (command.Remarks == "authorized")
+                    {
+                        string embedFieldText = command.Summary ?? "No description available\n";
+                        embedBuilder.AddField(command.Name, embedFieldText, true);
+                    }
+                }
+            }
+            if(Context.User.Id.ToString() == _config["AdminUserID"])
+            {
+                embedBuilder.AddField("Owner Commands", "You have access to these command because you're the bot's owner", false);
+                foreach (CommandInfo command in commands)
+                {
+                    if (command.Remarks == "owner")
+                    {
+                        string embedFieldText = command.Summary ?? "No description available\n";
+                        embedBuilder.AddField(command.Name, embedFieldText, true);
+                    }
+                }
             }
             var guildList = _client.Guilds;
             string admin = "";
