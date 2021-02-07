@@ -21,7 +21,7 @@ using TwitchLib.Communication.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
-using botof37s.Services;
+using botof37s.services;
 using botof37s.Modules;
 using Discord.Commands;
 
@@ -63,7 +63,7 @@ namespace botof37s
 
                 // setup logging and the ready event
                 client.Log += LogAsync;
-                client.Ready += ReadyAsync;
+                
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
                 // this is where we get the Token value from the configuration file, and start the bot
@@ -74,7 +74,6 @@ namespace botof37s
                 {
                     var last37 = Convert.ToDateTime(File.ReadAllText("db/lastmessage.37"));
                     TimeSpan ts = DateTime.UtcNow - last37;
-                    Console.WriteLine("Timespan: "+ts);
                     if (ts.TotalMinutes < Int32.Parse(_config["Frequency"]))
                     {
                         Console.WriteLine("Cooldown Triggered");
@@ -96,11 +95,7 @@ namespace botof37s
             return Task.CompletedTask;
         }
 
-        private Task ReadyAsync()
-        {
-            Console.WriteLine($"Connected as {_client.CurrentUser}");
-            return Task.CompletedTask;
-        }
+        
 
         // this method handles the ServiceCollection creation/configuration, and builds out the service provider we can call on later
         private ServiceProvider ConfigureServices()

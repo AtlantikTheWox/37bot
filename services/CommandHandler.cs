@@ -9,7 +9,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 
-namespace botof37s.Services
+namespace botof37s.services
 {
     public class CommandHandler
     {
@@ -19,6 +19,7 @@ namespace botof37s.Services
         public DiscordSocketClient _client;
         private readonly IServiceProvider _services;
         string delmessig = null;
+        bool custom = false;
 
         public CommandHandler(IServiceProvider services)
         {
@@ -31,7 +32,7 @@ namespace botof37s.Services
 
             // take action when we execute a command
             _commands.CommandExecuted += CommandExecutedAsync;
-
+            _client.Ready += ReadyAsync;
             // take action when we receive a message (so we can process it, and see if it is a valid command)
             _client.MessageReceived += MessageReceivedAsync;
         }
@@ -150,6 +151,32 @@ namespace botof37s.Services
             // failure scenario, let's let the user know
             await context.Channel.SendMessageAsync($"<@{context.User.Id}> something went wrong -> [{result}]!");
         }
-        
+        private Task ReadyAsync()
+        {
+            Console.WriteLine($"Connected as -> [{_client.CurrentUser}]");
+            if(File.Exists("db/customtime.37"))
+            {
+                
+                TimeSpan ts = DateTime.UtcNow - Convert.ToDateTime(File.ReadAllText("db/customtime.37"));
+                Console.WriteLine(ts);
+                if (ts.TotalMinutes > 90)
+                    custom = false;
+            }
+            if (!custom)
+            {
+                Activitypicker picker = new Activitypicker();
+                picker.Pick(_client);
+            }
+            return Task.CompletedTask;
+        }
+        public void customTrue()
+        {
+            File.WriteAllText("db/customtime.37", DateTime.UtcNow.ToString());
+            custom = true;
+        }
+        public void customFalse()
+        {
+            custom = false;
+        }
     }
 }
