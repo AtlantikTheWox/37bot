@@ -12,7 +12,6 @@ namespace colorpicker
             if (File.Exists("db/color.37"))
             {
                 pick = int.Parse(File.ReadAllText("db/color.37"));
-                Console.WriteLine("Henlo");
             }
             List<uint> color = new List<uint>
             {
@@ -48,7 +47,6 @@ namespace colorpicker
             }
             if (pick >= color.Count)
                 pick = 0;
-            Console.WriteLine(pick);
             int answer = pick;
             pick++;
             File.WriteAllText("db/color.37", pick.ToString());

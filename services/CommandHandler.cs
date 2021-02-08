@@ -81,7 +81,7 @@ namespace botof37s.services
             }
             if (message.Content.StartsWith($"AUTH {_client.CurrentUser.Id}") && message.Author.IsBot)
             {
-                Console.WriteLine("authmessage");
+                
                 if (delmessig == null)
                 {
                     Console.WriteLine("messig null");

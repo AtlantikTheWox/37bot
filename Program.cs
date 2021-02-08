@@ -37,6 +37,7 @@ namespace botof37s
         {
             if (!Directory.Exists("db")) Directory.CreateDirectory("db");
             if (!Directory.Exists("leaderboard")) Directory.CreateDirectory("leaderboard");
+            if (!Directory.Exists("authorized")) Directory.CreateDirectory("authorized");
             new Program().MainAsync().GetAwaiter().GetResult();
         }
 

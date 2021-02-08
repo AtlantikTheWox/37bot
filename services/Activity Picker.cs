@@ -16,7 +16,7 @@ namespace botof37s.services
         public void Pick(DiscordSocketClient _client)
         {
             Random rnd = new Random();
-            int num = rnd.Next(0, 10);
+            int num = rnd.Next(0, 11);
             if (num == 0) _client.SetGameAsync("https://open.spotify.com/track/5qHlikfhP5fD5DUwTbJR9D?si=b2ekUgO9RsedV3uL1XdiOw", null, ActivityType.Listening);
             if (num == 1) _client.SetGameAsync("Bob being obsessed with Momo", null, ActivityType.Watching);
             if (num == 2) _client.SetGameAsync("my mayo jar before Simmo gets to it", null, ActivityType.Watching);
@@ -27,6 +27,7 @@ namespace botof37s.services
             if (num == 7) _client.SetGameAsync("37s", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", ActivityType.Streaming);
             if (num == 8) _client.SetGameAsync("Watt being appreciated ❤️﻿", null, ActivityType.Watching);
             if (num == 9) _client.SetGameAsync("Bob spam﻿", null, ActivityType.Watching);
+            if (num == 10) _client.SetGameAsync("with my best friends Simbot and VentBot﻿", null, ActivityType.Playing);
         }
     }
 }
