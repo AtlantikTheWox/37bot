@@ -8,6 +8,16 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
+using TwitchLib.Client;
+using TwitchLib.Client.Enums;
+using TwitchLib.Client.Events;
+using TwitchLib.Client.Extensions;
+using TwitchLib.Client.Models;
+using TwitchLib;
+using TwitchLib.Communication.Clients;
+using TwitchLib.Communication.Models;
+using TwitchLib.Communication.Events;
+using TwitchLib.Communication.Enums;
 
 namespace botof37s.services
 {
@@ -20,6 +30,7 @@ namespace botof37s.services
         private readonly IServiceProvider _services;
         string delmessig = null;
         bool custom = false;
+        public TwitchClient twitchclient;
 
         public CommandHandler(IServiceProvider services)
         {
@@ -28,6 +39,7 @@ namespace botof37s.services
             _config = services.GetRequiredService<IConfiguration>();
             _commands = services.GetRequiredService<CommandService>();
             _client = services.GetRequiredService<DiscordSocketClient>();
+            twitchclient = services.GetRequiredService<TwitchClient>();
             _services = services;
 
             // take action when we execute a command
@@ -84,7 +96,6 @@ namespace botof37s.services
                 
                 if (delmessig == null)
                 {
-                    Console.WriteLine("messig null");
                     return;
                 }
                 else
@@ -153,14 +164,14 @@ namespace botof37s.services
         }
         private Task ReadyAsync()
         {
+            twitchclient.Reconnect();
             Console.WriteLine($"Connected as -> [{_client.CurrentUser}]");
             if(File.Exists("db/customtime.37"))
             {
-                
                 TimeSpan ts = DateTime.UtcNow - Convert.ToDateTime(File.ReadAllText("db/customtime.37"));
-                Console.WriteLine(ts);
                 if (ts.TotalMinutes > 90)
                     custom = false;
+                File.Delete("db/customtime.37");
             }
             if (!custom)
             {
@@ -177,6 +188,19 @@ namespace botof37s.services
         public void customFalse()
         {
             custom = false;
+        }
+        public async Task FileExpiryAsync(string key)
+        {
+            await Task.Delay(1000 * 60 * 3);
+            if (File.Exists($"{key}.37"))
+            {
+                File.Move($"{key}.37", $"{key}_expired.37");
+            }
+            await Task.Delay(1000 * 60 * 10);
+            if (File.Exists($"{key}_expired.37"))
+            {
+                File.Delete($"{key}_expired.37");
+            }
         }
     }
 }

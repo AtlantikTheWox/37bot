@@ -29,7 +29,7 @@ namespace botof37s.Modules
         [Remarks("all")]
         public async Task LeaderboardCommand()
         {
-            System.IO.DirectoryInfo di = new DirectoryInfo("leaderboard");
+            DirectoryInfo di = new DirectoryInfo("leaderboard");
             Dictionary<long, int> temp= new Dictionary<long, int>();
             List<Tuple<string,int>> d =  new List<Tuple<string, int>>();
             foreach(FileInfo file in di.GetFiles())

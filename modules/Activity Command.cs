@@ -81,7 +81,7 @@ namespace botof37s.Modules
                     await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Invalid argument!");
                     return;
             }
-            await Context.Channel.SendMessageAsync("test");
+            
         }
     }
 }

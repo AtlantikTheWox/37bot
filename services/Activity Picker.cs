@@ -21,7 +21,7 @@ namespace botof37s.services
             if (num == 1) _client.SetGameAsync("Bob being obsessed with Momo", null, ActivityType.Watching);
             if (num == 2) _client.SetGameAsync("my mayo jar before Simmo gets to it", null, ActivityType.Watching);
             if (num == 3) _client.SetGameAsync("Harry Elsham's sanity slowly deteriorate", null, ActivityType.Watching);
-            if (num == 4) _client.SetGameAsync("Fursonacon 2020 VR", null, ActivityType.Playing);
+            if (num == 4) _client.SetGameAsync("Fursonacon 2021 VR", null, ActivityType.Playing);
             if (num == 5) _client.SetGameAsync("https://www.youtube.com/watch?v=EJRXWNWJOrQ", null, ActivityType.Watching);
             if (num == 6) _client.SetGameAsync("Simmo's Mod appreciation simulator 2020", null, ActivityType.Playing);
             if (num == 7) _client.SetGameAsync("37s", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", ActivityType.Streaming);

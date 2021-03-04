@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using TwitchLib.Client;
@@ -18,15 +19,19 @@ namespace botof37s.services
     class Twitchbot
     {
         IConfiguration config;
-        string streamer;
         TwitchClient twitchclient;
-        void Main(TwitchClient client, string broadcaster,IConfiguration conf)
+        public Twitchbot(TwitchClient client, IConfiguration conf)
         {
             twitchclient = client;
             config = conf;
-            streamer = broadcaster;
-            client.OnLog += TwitchLog;
-            client.OnMessageReceived += TwitchMessageHandler;
+            Main();
+        }
+            
+
+        void Main()
+        {
+            twitchclient.OnLog += TwitchLog;
+            twitchclient.OnMessageReceived += TwitchMessageHandler;
         }
         private void TwitchLog(object sender, OnLogArgs e)
 
@@ -35,11 +40,23 @@ namespace botof37s.services
         }
         private void TwitchMessageHandler(object sender, OnMessageReceivedArgs e)
         {
-            if (e.ChatMessage.ToString().StartsWith(config["Prefix"]))
+            if(twitchclient.TwitchUsername == e.ChatMessage.Username)
+            {
+                return;
+            }
+            if(e.ChatMessage.Message == "!37")
+            {
+                if (!File.Exists($"twitch/{e.ChatMessage.UserId}.37"))
+                {
+                    twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} To claim 37s on Twitch, please go to Discord and use \"/37 twitch link <Your Twitch username>\" to link your accounts first.");
+                    return;
+                }
+            }
+            else if (e.ChatMessage.Message.ToString().StartsWith("!37 "))
             {
                 
             }
-            else if (e.ChatMessage.ToString().Contains(" 37"))
+            else if (e.ChatMessage.Message.Contains("37"))
             {
                 int rnd = new Random().Next(0, 6);
                 if (rnd == 0) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Noice");
@@ -49,7 +66,7 @@ namespace botof37s.services
                 if (rnd == 4) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} I'm just gonna silently judge you");
                 if (rnd == 5) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Wow, you think this is funny");
             }
+            
         }
-     
     }
 }

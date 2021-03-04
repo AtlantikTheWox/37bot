@@ -32,12 +32,15 @@ namespace botof37s
         // setup our fields we assign later
         public readonly IConfiguration _config;
         public DiscordSocketClient _client;
+        public TwitchClient twitchclient;
 
         static void Main(string[] args)
         {
             if (!Directory.Exists("db")) Directory.CreateDirectory("db");
             if (!Directory.Exists("leaderboard")) Directory.CreateDirectory("leaderboard");
             if (!Directory.Exists("authorized")) Directory.CreateDirectory("authorized");
+            if (!Directory.Exists("twitch")) Directory.CreateDirectory("twitch");
+            if (!Directory.Exists("twitchlink")) Directory.CreateDirectory("twitchlink");
             new Program().MainAsync().GetAwaiter().GetResult();
         }
 
@@ -47,9 +50,20 @@ namespace botof37s
             var _builder = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile(path: "config.json");
-
-            // build the configuration and assign to _config          
             _config = _builder.Build();
+            var clientOptions = new ClientOptions
+            {
+                MessagesAllowedInPeriod = 750,
+                ThrottlingPeriod = TimeSpan.FromSeconds(30)
+            };
+            ConnectionCredentials credentials = new ConnectionCredentials(_config["Twitch"], _config["TwitchOauth"]);
+            WebSocketClient customClient = new WebSocketClient(clientOptions);
+            twitchclient = new TwitchClient(customClient);
+            twitchclient.Initialize(credentials, _config["Broadcaster"]);
+            twitchclient.Connect();
+            Twitchbot twitchbot = new Twitchbot(twitchclient, _config);
+            // build the configuration and assign to _config          
+           
         }
 
         public async Task MainAsync()
@@ -77,11 +91,11 @@ namespace botof37s
                     TimeSpan ts = DateTime.UtcNow - last37;
                     if (ts.TotalMinutes < Int32.Parse(_config["Frequency"]))
                     {
-                        Console.WriteLine("Cooldown Triggered");
                         Cooldown cooldown = new Cooldown();
                         cooldown.CooldownAsync((int)(int.Parse(_config["Frequency"])*1000*60 - ts.TotalMilliseconds), _client);
                     }
                 }
+                
                 // we get the CommandHandler class here and call the InitializeAsync method to start things up for the CommandHandler service
                 await services.GetRequiredService<CommandHandler>().InitializeAsync();
                 
@@ -110,6 +124,7 @@ namespace botof37s
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandler>()
+                .AddSingleton(twitchclient)
                 .BuildServiceProvider();
         }
         
