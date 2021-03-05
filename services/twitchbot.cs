@@ -51,10 +51,48 @@ namespace botof37s.services
                     twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} To claim 37s on Twitch, please go to Discord and use \"/37 twitch link <Your Twitch username>\" to link your accounts first.");
                     return;
                 }
+                else
+                {
+                    //todo
+                }
             }
             else if (e.ChatMessage.Message.ToString().StartsWith("!37 "))
             {
-                
+                string messig = e.ChatMessage.Message.Remove(0, 4);
+                if (messig.StartsWith("verify"))
+                {
+                    if(messig.Remove(0,6) == "")
+                    {
+                        twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} You need to provide a verification Key!");
+                        return;
+                    }
+                    else if (File.Exists($"twitchlink/{e.ChatMessage.Username}.37"))
+                    {
+                        if(messig.Remove(0,7) == File.ReadAllLines($"twitchlink/{e.ChatMessage.Username}.37")[1])
+                        {
+                            File.WriteAllText($"twitch/{e.ChatMessage.UserId}.37", File.ReadAllLines($"twitchlink/{e.ChatMessage.Username}.37")[0]);
+                            File.Delete($"twitchlink/{e.ChatMessage.Username}.37");
+                            twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Verification successful!");
+                            return;
+                        }
+                        else
+                        {
+                            twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Invalid verification key! Please try again.");
+                            return;
+                        }
+                    }
+                    else if (File.Exists($"twitchlink/{e.ChatMessage.Username}_expired.37"))
+                    {
+                        twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} I'm sorry, but your verification request has expired. Please try again.");
+                        File.Delete($"twitchlink/{e.ChatMessage.Username}_expired.37");
+                        return;
+                    }
+                    else
+                    {
+                        twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} This account is currently not pending verification. If you are trying to verify your account please check if you made a typo.");
+                    }
+
+                }
             }
             else if (e.ChatMessage.Message.Contains("37"))
             {

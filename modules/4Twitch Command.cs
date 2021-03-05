@@ -50,13 +50,13 @@ namespace botof37s.Modules
                         if (File.ReadAllText($"twitch/{file.Name}") == Context.User.Id.ToString())
                         {
                             await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> You have already linked an account. To link a new account you have to remove your current account first.");
-                            break;
+                            return;
                         }
                     }
                     if(username == null)
                     {
                         await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> You need to provide a username!");
-                        break;
+                        return;
                     }
                     if (File.Exists($"twitch/{username}.37")||File.Exists($"twitclink/{username}.37"))
                     {
@@ -75,7 +75,7 @@ namespace botof37s.Modules
                         }
                     stop:;
                         await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> The Twitch account you provided is already linked to or awaiting verification with another Discord account. If you think this is a mistake contact {admin}");
-                        break;
+                        return;
                     }
                     DirectoryInfo di2 = new DirectoryInfo("twitchlink");
                     foreach (FileInfo file2 in di2.GetFiles())
@@ -93,9 +93,9 @@ namespace botof37s.Modules
                         await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Check your DMs");
                     }
                     string channel = _config["Broadcaster"];
-                    await Context.User.SendMessageAsync($"<@{Context.User.Id}> Please make sure you're logged into your Twitch account, go to https://twitch.tv/{channel} and enter '!37 verify {key}' in chat. Your verification key will expire in 3 minutes");
-                    File.WriteAllText($"{username}.37", $"{Context.User.Id}\n{key}");
-                    handler.FileExpiryAsync(username);
+                    await Context.User.SendMessageAsync($"<@{Context.User.Id}> Please make sure you're logged into your Twitch account, go to <https://twitch.tv/{channel}> and enter '!37 verify {key}' in chat. Your verification key will expire in 3 minutes");
+                    File.WriteAllText($"twitchlink/{username}.37", $"{Context.User.Id}\n{key}");
+                    handler.FileExpiryAsync($"twitchlink/{username}");
 
 
                     return;
@@ -106,7 +106,7 @@ namespace botof37s.Modules
                         if (File.ReadAllText($"twitch/{file.Name}") == Context.User.Id.ToString())
                         {
                             file.Delete();
-                            await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Twitch accou");
+                            await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Twitch account unlinked successfully");
                         }
                     }
                     return;
