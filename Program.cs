@@ -66,7 +66,6 @@ namespace botof37s
             twitchclient = new TwitchClient(customClient);
             twitchclient.Initialize(credentials, _config["Broadcaster"]);
             twitchclient.Connect();
-            Twitchbot twitchbot = new Twitchbot(twitchclient, _config);
             // build the configuration and assign to _config          
            
         }
@@ -89,6 +88,7 @@ namespace botof37s
                 // this is where we get the Token value from the configuration file, and start the bot
                 await client.LoginAsync(TokenType.Bot, _config["Token"]);
                 await client.StartAsync();
+                Twitchbot twitchbot = new Twitchbot(twitchclient, _config, _client);
                 // sets the bots status indicator to "Do not disturb" if its still on cooldown
                 if (File.Exists("db/lastmessage.37"))
                 {

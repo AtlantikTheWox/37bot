@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Discord.Rest;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using TwitchLib.Client;
@@ -34,18 +35,17 @@ namespace botof37s.services
 
         public CommandHandler(IServiceProvider services)
         {
-            // juice up the fields with these services
-            // since we passed the services in, we can use GetRequiredService to pass them into the fields set earlier
+            
             _config = services.GetRequiredService<IConfiguration>();
             _commands = services.GetRequiredService<CommandService>();
             _client = services.GetRequiredService<DiscordSocketClient>();
             twitchclient = services.GetRequiredService<TwitchClient>();
             _services = services;
 
-            // take action when we execute a command
+            
             _commands.CommandExecuted += CommandExecutedAsync;
             _client.Ready += ReadyAsync;
-            // take action when we receive a message (so we can process it, and see if it is a valid command)
+            
             _client.MessageReceived += MessageReceivedAsync;
         }
 
@@ -55,7 +55,7 @@ namespace botof37s.services
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
-        // this class is where the magic starts, and takes actions upon receiving messages
+        
         public async Task MessageReceivedAsync(SocketMessage rawMessage)
         {
             // ensures we don't process system/other bot messages
@@ -131,7 +131,54 @@ namespace botof37s.services
             // determine if the message has a valid prefix, and adjust argPos based on prefix
             if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix, ref argPos)))
             {
-                return;
+                if (message.Content.ToLower().Contains("furry"))
+                {
+                    var missage = await message.Channel.SendMessageAsync("!quote 1");
+                    delmessig = missage.Id.ToString();
+                }
+                else if (message.Content.Contains("37"))
+                {
+                    try
+                    {
+                        var m = (RestUserMessage)await message.Channel.GetMessageAsync(message.Id);
+                        var guildList = _client.Guilds;
+                        foreach (SocketGuild guild in guildList)
+                        {
+                            foreach (IEmote emote in guild.Emotes)
+                            {
+                                if (emote.Name.ToString() == "37a")
+                                {
+                                    await m.AddReactionAsync(emote);
+                                }
+                            }
+                        }
+                        foreach (SocketGuild guild in guildList)
+                        {
+                            foreach (IEmote emote in guild.Emotes)
+                            {
+                                if (emote.Name.ToString() == "37b")
+                                {
+                                    await m.AddReactionAsync(emote);
+                                }
+                            }
+                        }
+                        foreach (SocketGuild guild in guildList)
+                        {
+                            foreach (IEmote emote in guild.Emotes)
+                            {
+                                if (emote.Name.ToString() == "37c")
+                                {
+                                    await m.AddReactionAsync(emote);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                    return;
+                }
             }
 
             dm:;

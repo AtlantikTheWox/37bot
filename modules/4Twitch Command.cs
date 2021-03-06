@@ -93,7 +93,7 @@ namespace botof37s.Modules
                         await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Check your DMs");
                     }
                     string channel = _config["Broadcaster"];
-                    await Context.User.SendMessageAsync($"<@{Context.User.Id}> Please make sure you're logged into your Twitch account, go to <https://twitch.tv/{channel}> and enter '!37 verify {key}' in chat. Your verification key will expire in 3 minutes");
+                    await Context.User.SendMessageAsync($"<@{Context.User.Id}> Please make sure you're logged into your Twitch account, go to <https://twitch.tv/{channel}> and enter \"!37 verify {key}\" in chat. Your verification key will expire in 3 minutes");
                     File.WriteAllText($"twitchlink/{username}.37", $"{Context.User.Id}\n{key}");
                     handler.FileExpiryAsync($"twitchlink/{username}");
 

@@ -2,6 +2,9 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
@@ -13,6 +16,7 @@ using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Enums;
 using Microsoft.Extensions.Configuration;
+using botof37s.Modules;
 
 namespace botof37s.services
 {
@@ -20,10 +24,12 @@ namespace botof37s.services
     {
         IConfiguration config;
         TwitchClient twitchclient;
-        public Twitchbot(TwitchClient client, IConfiguration conf)
+        DiscordSocketClient _client;
+        public Twitchbot(TwitchClient tclient, IConfiguration conf, DiscordSocketClient client)
         {
-            twitchclient = client;
+            twitchclient = tclient;
             config = conf;
+            _client = client;
             Main();
         }
             
@@ -48,12 +54,69 @@ namespace botof37s.services
             {
                 if (!File.Exists($"twitch/{e.ChatMessage.UserId}.37"))
                 {
-                    twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} To claim 37s on Twitch, please go to Discord and use \"/37 twitch link <Your Twitch username>\" to link your accounts first.");
+                    twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} To claim 37s on Twitch, please go to Discord and use \"/37 twitch link {e.ChatMessage.Username}\" to link your accounts first.");
                     return;
                 }
                 else
                 {
-                    //todo
+                    DateTime last37 = new DateTime();
+                    IConfiguration _config;
+
+                    var _builder = new ConfigurationBuilder().
+                    SetBasePath(AppContext.BaseDirectory).
+                    AddJsonFile(path: "config.json");
+
+                    _config = _builder.Build();
+                    if (File.Exists("db/lastmessage.37"))
+                    {
+                        last37 = Convert.ToDateTime(File.ReadAllText("db/lastmessage.37"));
+                    }
+                    TimeSpan ts = DateTime.UtcNow - last37;
+                    if (ts.TotalMinutes >= Int32.Parse(_config["Frequency"]))
+                    {
+                        ulong uid = ulong.Parse(File.ReadAllText($"twitch/{e.ChatMessage.UserId}.37"));
+                        int personalcount = 0;
+                        int counter = 0;
+                        if (File.Exists($"leaderboard/{uid}.37"))
+                        {
+                            personalcount = Int32.Parse(File.ReadAllText($"leaderboard/{uid}.37"));
+                        }
+                        if (File.Exists("db/counter.37"))
+                        {
+                            counter = int.Parse(File.ReadAllText("db/counter.37"));
+                        }
+                        File.WriteAllText("db/lastmessage.37", DateTime.UtcNow.ToString());
+                        File.WriteAllText($"leaderboard/{uid}.37", (personalcount + 1).ToString());
+                        File.WriteAllText("db/last37uname.37", $"{e.ChatMessage.Username}\nt");
+                        File.WriteAllText("db/counter.37", (counter + 1).ToString());
+
+                        Cooldown cooldown = new Cooldown();
+                        cooldown.CooldownAsync(Int32.Parse(_config["Frequency"]) * 60 * 1000, _client);
+                        var replies = new List<string>
+                        {
+                             $"@{e.ChatMessage.Username} Coming right up!",
+                             $"<@{e.ChatMessage.Username} As you wish!",
+                             $"@{e.ChatMessage.Username} I cant believe its not spam!",
+                             $"@{e.ChatMessage.Username} Ugh, fine!"
+                        };
+                        var answer = replies[new Random().Next(replies.Count - 1)];
+                        twitchclient.SendMessage(e.ChatMessage.Channel,answer);
+                    }
+                    else
+                    {
+                        string last37uname = "[REDACTED]";
+                        if (File.Exists("db/last37uname.37"))
+                        {
+                            last37uname = File.ReadAllLines("db/last37uname.37")[0];
+                            if (File.ReadAllLines("db/last37uname.37")[1] == "d")
+                            {
+                                last37uname = last37uname + " on Discord";
+                            }
+                            
+                        }
+                    
+                        twitchclient.SendMessage(e.ChatMessage.Channel, $"I'm sorry @{e.ChatMessage.Username}, but you will have to wait another {Math.Floor(Int32.Parse(_config["Frequency"]) - ts.TotalMinutes)} minutes and {60 - ts.Seconds} seconds. The last 37 was claimed by {last37uname}.");
+                    }
                 }
             }
             else if (e.ChatMessage.Message.ToString().StartsWith("!37 "))

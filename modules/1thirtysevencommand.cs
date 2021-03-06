@@ -54,7 +54,7 @@ namespace botof37s.Modules
                 }
                 File.WriteAllText("db/lastmessage.37", DateTime.UtcNow.ToString());
                 File.WriteAllText($"leaderboard/{Context.User.Id}.37", (personalcount + 1).ToString());
-                File.WriteAllText("db/last37id.37", Context.User.Id.ToString());
+                File.WriteAllText("db/last37uname.37", $"{Context.User.Username}\nd");
                 File.WriteAllText("db/counter.37", (counter + 1).ToString());
 
                 Cooldown cooldown = new Cooldown();
@@ -72,26 +72,15 @@ namespace botof37s.Modules
             else
             {
                 string last37uname = "[REDACTED]";
-                if (File.Exists("db/last37id.37"))
+                if (File.Exists("db/last37uname.37"))
                 {
-                    var _client = (DiscordSocketClient)Context.Client;
-                    var guildList = _client.Guilds;
-                    foreach (SocketGuild guild in guildList)
+                    last37uname = File.ReadAllLines("db/last37uname.37")[0];
+                    if (File.ReadAllLines("db/last37uname.37")[1] == "t")
                     {
-
-                        foreach (SocketUser user in guild.Users)
-                        {
-                            if (Convert.ToString(user.Id) == File.ReadAllText("db/last37id.37"))
-                            {
-                                last37uname = user.Username;
-                                goto stop;
-                            }
-                        }
-
+                        last37uname = last37uname + " on Twitch";
                     }
                 }
-            stop:;
-                await Context.Channel.SendMessageAsync($"I'm sorry <@{Context.User.Id}>, but you will have to wait another {Math.Floor(Int32.Parse(_config["Frequency"]) - ts.TotalMinutes)} minutes and {60 - ts.Seconds} seconds. The last 37 was claimed by {last37uname}");
+                await Context.Channel.SendMessageAsync($"I'm sorry <@{Context.User.Id}>, but you will have to wait another {Math.Floor(Int32.Parse(_config["Frequency"]) - ts.TotalMinutes)} minutes and {60 - ts.Seconds} seconds. The last 37 was claimed by {last37uname}.");
             }
 
         }
