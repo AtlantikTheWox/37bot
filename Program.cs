@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Discord.Audio;
 using Discord.Rest;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
@@ -33,6 +34,8 @@ namespace botof37s
         public readonly IConfiguration _config;
         public DiscordSocketClient _client;
         public TwitchClient twitchclient;
+        public Dictionary<ulong, IAudioClient> _connections = new Dictionary<ulong, IAudioClient>();
+        
 
         static void Main(string[] args)
         {
@@ -41,6 +44,9 @@ namespace botof37s
             if (!Directory.Exists("authorized")) Directory.CreateDirectory("authorized");
             if (!Directory.Exists("twitch")) Directory.CreateDirectory("twitch");
             if (!Directory.Exists("twitchlink")) Directory.CreateDirectory("twitchlink");
+            if (!Directory.Exists("twitchlink")) Directory.CreateDirectory("twitchlink");
+            if (!Directory.Exists("prank")) Directory.CreateDirectory("prank");
+
             DirectoryInfo di = new DirectoryInfo("twitchlink");
             foreach(FileInfo file in di.GetFiles())
             {
@@ -130,6 +136,7 @@ namespace botof37s
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton(twitchclient)
+                .AddSingleton(_connections)
                 .BuildServiceProvider();
         }
         

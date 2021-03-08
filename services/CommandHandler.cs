@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Discord.Rest;
+using Discord.Audio;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using TwitchLib.Client;
@@ -19,6 +21,10 @@ using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Enums;
+using System.Linq;
+using botof37s.Modules;
+using System.Diagnostics;
+using System.Net.Http;
 
 namespace botof37s.services
 {
@@ -32,6 +38,7 @@ namespace botof37s.services
         string delmessig = null;
         bool custom = false;
         public TwitchClient twitchclient;
+        public Dictionary<ulong, IAudioClient> _connections;
 
         public CommandHandler(IServiceProvider services)
         {
@@ -40,12 +47,14 @@ namespace botof37s.services
             _commands = services.GetRequiredService<CommandService>();
             _client = services.GetRequiredService<DiscordSocketClient>();
             twitchclient = services.GetRequiredService<TwitchClient>();
+            _connections = services.GetRequiredService<Dictionary<ulong, IAudioClient>>();
             _services = services;
 
             
             _commands.CommandExecuted += CommandExecutedAsync;
             _client.Ready += ReadyAsync;
-            
+            _client.UserVoiceStateUpdated += OnVoiceStateUpdated;
+
             _client.MessageReceived += MessageReceivedAsync;
         }
 
@@ -68,6 +77,13 @@ namespace botof37s.services
             {
                 return;
             }
+
+            //REMOVE
+            if(message.Author.Id != ulong.Parse("329650083819814913"))
+            {
+                return;
+            }
+            //REMOVE
             if (message.Content.Replace(" ", "").ToLower().Contains("<:37c:712802406173245460><:37b:712802398854316052>"))
             {
                 var guildList = _client.Guilds;
@@ -121,7 +137,7 @@ namespace botof37s.services
             {
                 goto dm;
             }
-            if (rawMessage.Channel.GetType().ToString() == "Discord.WebSocket.SocketDMChannel"&& !message.Content.StartsWith(_config["Prefix"]) && !message.Content.StartsWith(_client.CurrentUser.ToString()))
+            if (rawMessage.Channel.GetType().ToString() == "Discord.WebSocket.SocketDMChannel" && !message.Content.StartsWith(_config["Prefix"]) && !message.Content.StartsWith(_client.CurrentUser.ToString()))
             {
                 goto dm;
             }
@@ -129,7 +145,7 @@ namespace botof37s.services
             string prefix = _config["Prefix"];
 
             // determine if the message has a valid prefix, and adjust argPos based on prefix
-            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix, ref argPos)))
+            if (!message.HasStringPrefix(prefix, ref argPos))
             {
                 if (message.Content.ToLower().Contains("furry"))
                 {
@@ -179,6 +195,7 @@ namespace botof37s.services
                     }
                     return;
                 }
+                return;
             }
 
             dm:;
@@ -227,6 +244,39 @@ namespace botof37s.services
             }
             return Task.CompletedTask;
         }
+        private async Task OnVoiceStateUpdated(SocketUser user, SocketVoiceState state1, SocketVoiceState state2)
+        {
+            // Check if this was a non-bot user joining a voice channel
+            if (user.IsBot)
+                return;
+
+            var guild = state2.VoiceChannel?.Guild ?? state1.VoiceChannel?.Guild;
+            if (guild == null)
+                return;
+
+            var connection = _connections.GetValueOrDefault(guild.Id);
+            if (state2.VoiceChannel == null && state1.VoiceChannel != null && connection != null)
+            {
+                // Disconnected
+                if (!state1.VoiceChannel.Users.Any(u => !u.IsBot))
+                {
+                    await state1.VoiceChannel.DisconnectAsync();
+                }
+                return;
+            }
+
+            if (connection == null || connection.ConnectionState != ConnectionState.Connected)
+            {
+                if (File.Exists($"prank/{user.Id}.37"))
+                {
+                    if (File.Exists($"audio/{File.ReadAllText($"prank/{user.Id}.37")}.mp3"))
+                    {
+                        await Task.Delay(1000);
+                        ConnectToVoice(state2.VoiceChannel, File.ReadAllText($"prank/{user.Id}.37"),user.Id.ToString()).Start();
+                    }
+                }
+            }
+        }
         public void customTrue()
         {
             File.WriteAllText("db/customtime.37", DateTime.UtcNow.ToString());
@@ -247,6 +297,59 @@ namespace botof37s.services
             if (File.Exists($"{key}_expired.37"))
             {
                 File.Delete($"{key}_expired.37");
+            }
+        }
+        private async Task ConnectToVoice(SocketVoiceChannel voiceChannel, string sound, string id)
+        {
+            if (voiceChannel == null)
+                return;
+
+            try
+            {
+                Console.WriteLine($"Connecting to channel {voiceChannel.Id}");
+                var connection = await voiceChannel.ConnectAsync();
+                Console.WriteLine($"Connected to channel {voiceChannel.Id}");
+                _connections[voiceChannel.Guild.Id] = connection;
+
+                await Task.Delay(3000);
+                await Say(connection, sound);
+                await Task.Delay(1000);
+                await voiceChannel.DisconnectAsync();
+                File.Delete($"prank/{id}.37");
+            }
+            catch (Exception ex)
+            {
+                // Oh no, error
+                Console.WriteLine(ex.Message);
+                Console.WriteLine($"- {ex.StackTrace}");
+            }
+        }
+        private async Task Say(IAudioClient connection, string sound)
+        {
+            try
+            {
+                await connection.SetSpeakingAsync(true); // send a speaking indicator
+
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "ffmpeg",
+                    Arguments = $@"-i ""audio/{sound}.mp3"" -ac 2 -f s16le -ar 48000 pipe:1",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false
+                };
+                var ffmpeg = Process.Start(psi);
+
+                var output = ffmpeg.StandardOutput.BaseStream;
+                var discord = connection.CreatePCMStream(AudioApplication.Voice);
+                await output.CopyToAsync(discord);
+                await discord.FlushAsync();
+
+                await connection.SetSpeakingAsync(false); // we're not speaking anymore
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine($"- {ex.StackTrace}");
             }
         }
     }
