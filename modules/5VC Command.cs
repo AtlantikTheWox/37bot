@@ -46,7 +46,7 @@ namespace botof37s.Modules
         public Dictionary<ulong, Tuple<IAudioClient, Process>> _connections { get; set; }
         [Command("vc", RunMode = RunMode.Async)]
         [Summary("Manages the voice chat feature of the bot")]
-        [Name("🗣 vc")]
+        [Name("🗣 vc <sound name|list|random>")]
         [Remarks("all")]
         public async Task VCCommand(string sound = null)
         {

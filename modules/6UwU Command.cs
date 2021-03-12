@@ -25,7 +25,8 @@ namespace botof37s.Modules
         IConfiguration _config { get; set; }
         [Command("uwufy", RunMode = RunMode.Async)]
         [Alias("owofy")]
-        [Summary("uwufies the most recent message in a channel")]
+        [Summary("uwufies the most recent message in a channel or a message requested")]
+        [Name("<:uwu:819967959475814430> uwufy <-|message ID>")]
         [Remarks("all")]
         public async Task UwUfyCommand(string uwuid = null)
         {
