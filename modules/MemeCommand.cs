@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration.Json;
 using botof37s;
 using botof37s.services;
+using colorpicker;
 
 namespace botof37s.Modules
 {
@@ -36,7 +37,7 @@ namespace botof37s.Modules
 
             if(mp3 == null||user == null)
             {
-                await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> You need to provide an mp3 as well as a username");
+                await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> You need to provide a sound as well as a username");
                 return;
             }
             if (!File.Exists($"audio/{mp3}.wav"))
@@ -46,6 +47,7 @@ namespace botof37s.Modules
             }
             
             string id = null;
+            string username = "";
             var guilds = _client.Guilds;
             foreach (SocketGuild guild in guilds)
             {
@@ -54,6 +56,7 @@ namespace botof37s.Modules
                     if (user1.Username.ToLower() == user.ToLower())
                     {
                         id = user1.Id.ToString();
+                        username = user1.Username;
                     }
                 }
             }
@@ -62,13 +65,22 @@ namespace botof37s.Modules
                 await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm having trouble finding that user, please try again");
                 return;
             }
-            if (File.Exists($"prank/{id}.37"))
-            {
-                await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sorry, but that user is already queued up for a meme. Please try again later.");
-                return;
-            }
+            
             File.WriteAllText($"prank/{id}.37", mp3);
             await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Successfully queued the user for a meme!");
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.WithFooter("No copyright infringement intended Kappa", "https://cdn.discordapp.com/emojis/734132648800419880.png");
+            var tfile = TagLib.File.Create($"audio/{mp3}.wav");
+            string song = tfile.Tag.Title;
+            string artist = tfile.Tag.Performers.FirstOrDefault();
+            string thumb = tfile.Tag.Comment;
+            builder.WithThumbnailUrl(thumb);
+            builder.WithTitle($"Queued meme for user **{username}**");
+            builder.WithDescription($"**{song}** by **{artist}**");
+            Colorpicker picker = new Colorpicker();
+            builder.WithColor(picker.Pick());
+            await Context.Channel.SendMessageAsync("", false, builder.Build());
 
         }
     }

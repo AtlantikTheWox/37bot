@@ -95,7 +95,7 @@ namespace botof37s.services
                         var replies = new List<string>
                         {
                              $"@{e.ChatMessage.Username} Coming right up!",
-                             $"<@{e.ChatMessage.Username} As you wish!",
+                             $"@{e.ChatMessage.Username} As you wish!",
                              $"@{e.ChatMessage.Username} I cant believe its not spam!",
                              $"@{e.ChatMessage.Username} Ugh, fine!"
                         };
