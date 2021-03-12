@@ -28,6 +28,9 @@ namespace botof37s.Modules
         public CommandHandler handler { get; set; }
 
         [Command("meme")]
+        [Name("🤪 meme <sound> <username>")]
+        [Summary("Plays a selected sound the next time the user joins a voice channel")]
+        [Remarks("authorized")]
         public async Task MemeCommandAsync(string mp3 = null, [Remainder]string user  = null)
         {
 

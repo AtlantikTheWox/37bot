@@ -72,6 +72,29 @@ namespace botof37s.services
             {
                 return;
             }
+            if (message.Content.StartsWith($"AUTH {_client.CurrentUser.Id}") && message.Author.IsBot)
+            {
+
+                if (delmessig == null)
+                {
+                    return;
+                }
+                else
+                {
+                    try
+                    {
+                        string[] subs = message.Content.Split(" ");
+                        double verify = Convert.ToDouble(subs[2]);
+                        double key = Convert.ToDouble(Decimal.Round(Convert.ToDecimal(Double.Parse(delmessig) * verify), 14));
+                        await message.Channel.SendMessageAsync($"AUTHKEY {key}");
+                        delmessig = null;
+                    }
+                    catch (Exception e)
+                    {
+                        await message.Channel.SendMessageAsync(e.ToString());
+                    }
+                }
+            }
 
             if (message.Source != MessageSource.User)
             {
@@ -107,29 +130,7 @@ namespace botof37s.services
                 }
 
             }
-            if (message.Content.StartsWith($"AUTH {_client.CurrentUser.Id}") && message.Author.IsBot)
-            {
-                
-                if (delmessig == null)
-                {
-                    return;
-                }
-                else
-                {
-                    try
-                    {
-                        string[] subs = message.Content.Split(" ");
-                        double verify = Convert.ToDouble(subs[2]);
-                        double key = Convert.ToDouble(Decimal.Round(Convert.ToDecimal(Double.Parse(delmessig) * verify), 14));
-                        await message.Channel.SendMessageAsync($"AUTHKEY {key}");
-                        delmessig = null;
-                    }
-                    catch (Exception e)
-                    {
-                        await message.Channel.SendMessageAsync(e.ToString());
-                    }
-                }
-            }
+            
 
             // sets the argument position away from the prefix we set
             var argPos = 0;
@@ -152,7 +153,7 @@ namespace botof37s.services
                     var missage = await message.Channel.SendMessageAsync("!quote 1");
                     delmessig = missage.Id.ToString();
                 }
-                else if (message.Content.Contains("37"))
+                else if (message.Content.Contains("37 "))
                 {
                     try
                     {
