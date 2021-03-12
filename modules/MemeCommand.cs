@@ -39,18 +39,22 @@ namespace botof37s.Modules
                 await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> You need to provide an mp3 as well as a username");
                 return;
             }
-            if (!File.Exists($"audio/{mp3}.mp3"))
+            if (!File.Exists($"audio/{mp3}.wav"))
             {
                 await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sorry, but the audio file you requested doesnt exist (yet)");
                 return;
             }
-            SocketGuild guild = (SocketGuild)Context.Guild;
+            
             string id = null;
-            foreach(SocketUser user1 in guild.Users)
+            var guilds = _client.Guilds;
+            foreach (SocketGuild guild in guilds)
             {
-                if(user1.Username.ToLower() == user.ToLower())
+                foreach (SocketUser user1 in guild.Users)
                 {
-                    id = user1.Id.ToString();
+                    if (user1.Username.ToLower() == user.ToLower())
+                    {
+                        id = user1.Id.ToString();
+                    }
                 }
             }
             if(id == null)

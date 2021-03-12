@@ -38,7 +38,7 @@ namespace botof37s.services
         string delmessig = null;
         bool custom = false;
         public TwitchClient twitchclient;
-        public Dictionary<ulong, IAudioClient> _connections;
+        public Dictionary<ulong, Tuple<IAudioClient, Process>> _connections;
 
         public CommandHandler(IServiceProvider services)
         {
@@ -47,7 +47,7 @@ namespace botof37s.services
             _commands = services.GetRequiredService<CommandService>();
             _client = services.GetRequiredService<DiscordSocketClient>();
             twitchclient = services.GetRequiredService<TwitchClient>();
-            _connections = services.GetRequiredService<Dictionary<ulong, IAudioClient>>();
+            _connections = services.GetRequiredService<Dictionary<ulong, Tuple<IAudioClient, Process>>>();
             _services = services;
 
             
@@ -145,7 +145,7 @@ namespace botof37s.services
             string prefix = _config["Prefix"];
 
             // determine if the message has a valid prefix, and adjust argPos based on prefix
-            if (!message.HasStringPrefix(prefix, ref argPos))
+            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix, ref argPos)))
             {
                 if (message.Content.ToLower().Contains("furry"))
                 {
@@ -253,14 +253,27 @@ namespace botof37s.services
             var guild = state2.VoiceChannel?.Guild ?? state1.VoiceChannel?.Guild;
             if (guild == null)
                 return;
-
-            var connection = _connections.GetValueOrDefault(guild.Id);
+            IAudioClient connection;
+            try
+            {
+                connection = _connections.GetValueOrDefault(guild.Id).Item1;
+            }
+            catch(System.NullReferenceException)
+            {
+                connection = null;
+            }
             if (state2.VoiceChannel == null && state1.VoiceChannel != null && connection != null)
             {
                 // Disconnected
                 if (!state1.VoiceChannel.Users.Any(u => !u.IsBot))
                 {
                     await state1.VoiceChannel.DisconnectAsync();
+                    if (_connections.GetValueOrDefault(guild.Id).Item2 != null)
+                    {
+                        _connections.GetValueOrDefault(guild.Id).Item2.Kill();
+                        Tuple<IAudioClient, Process> te = new Tuple<IAudioClient, Process>(connection, null);
+                        _connections[guild.Id] = te;
+                    }
                 }
                 return;
             }
@@ -269,7 +282,7 @@ namespace botof37s.services
             {
                 if (File.Exists($"prank/{user.Id}.37"))
                 {
-                    if (File.Exists($"audio/{File.ReadAllText($"prank/{user.Id}.37")}.mp3"))
+                    if (File.Exists($"audio/{File.ReadAllText($"prank/{user.Id}.37")}.wav"))
                     {
                         await Task.Delay(1000);
                         ConnectToVoice(state2.VoiceChannel, File.ReadAllText($"prank/{user.Id}.37"),user.Id.ToString()).Start();
@@ -309,10 +322,10 @@ namespace botof37s.services
                 Console.WriteLine($"Connecting to channel {voiceChannel.Id}");
                 var connection = await voiceChannel.ConnectAsync();
                 Console.WriteLine($"Connected to channel {voiceChannel.Id}");
-                _connections[voiceChannel.Guild.Id] = connection;
-
+                Tuple<IAudioClient, Process> t = new Tuple<IAudioClient, Process>(connection, null);
+                _connections[voiceChannel.Guild.Id] = t;
                 await Task.Delay(3000);
-                await Say(connection, sound);
+                await Say(connection, sound, voiceChannel);
                 await Task.Delay(1000);
                 await voiceChannel.DisconnectAsync();
                 File.Delete($"prank/{id}.37");
@@ -324,7 +337,7 @@ namespace botof37s.services
                 Console.WriteLine($"- {ex.StackTrace}");
             }
         }
-        private async Task Say(IAudioClient connection, string sound)
+        private async Task Say(IAudioClient connection, string sound, SocketVoiceChannel channel)
         {
             try
             {
@@ -333,17 +346,20 @@ namespace botof37s.services
                 var psi = new ProcessStartInfo
                 {
                     FileName = "ffmpeg",
-                    Arguments = $@"-i ""audio/{sound}.mp3"" -ac 2 -f s16le -ar 48000 pipe:1",
+                    Arguments = $@"-re -i ""audio/{sound}.wav"" -ac 2 -f s16le -ar 48000 pipe:1",
                     RedirectStandardOutput = true,
                     UseShellExecute = false
                 };
                 var ffmpeg = Process.Start(psi);
 
                 var output = ffmpeg.StandardOutput.BaseStream;
+                Tuple<IAudioClient, Process> t = new Tuple<IAudioClient, Process>(connection, ffmpeg);
+                _connections[channel.Guild.Id] = t;
                 var discord = connection.CreatePCMStream(AudioApplication.Voice);
                 await output.CopyToAsync(discord);
                 await discord.FlushAsync();
-
+                Tuple<IAudioClient, Process> te = new Tuple<IAudioClient, Process>(connection, null);
+                _connections[channel.Guild.Id] = te;
                 await connection.SetSpeakingAsync(false); // we're not speaking anymore
             }
             catch (Exception ex)

@@ -25,6 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using botof37s.services;
 using botof37s.Modules;
 using Discord.Commands;
+using System.Diagnostics;
 
 namespace botof37s
 {
@@ -34,7 +35,7 @@ namespace botof37s
         public readonly IConfiguration _config;
         public DiscordSocketClient _client;
         public TwitchClient twitchclient;
-        public Dictionary<ulong, IAudioClient> _connections = new Dictionary<ulong, IAudioClient>();
+        public Dictionary<ulong, Tuple<IAudioClient, Process>> _connections = new Dictionary<ulong, Tuple<IAudioClient, Process>>();
         
 
         static void Main(string[] args)
