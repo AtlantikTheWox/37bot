@@ -99,7 +99,7 @@ namespace botof37s.services
                              $"@{e.ChatMessage.Username} I cant believe its not spam!",
                              $"@{e.ChatMessage.Username} Ugh, fine!"
                         };
-                        var answer = replies[new Random().Next(replies.Count - 1)];
+                        var answer = replies[new Random().Next(replies.Count)];
                         twitchclient.SendMessage(e.ChatMessage.Channel,answer);
                     }
                     else
@@ -157,7 +157,7 @@ namespace botof37s.services
 
                 }
             }
-            else if (e.ChatMessage.Message.Contains("37"))
+            else if (e.ChatMessage.Message.Contains("37 "))
             {
                 int rnd = new Random().Next(0, 6);
                 if (rnd == 0) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Noice");

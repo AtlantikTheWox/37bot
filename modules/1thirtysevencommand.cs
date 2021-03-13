@@ -66,7 +66,7 @@ namespace botof37s.Modules
                     $"<@{Context.User.Id}> I cant believe its not spam!",
                     $"<@{Context.User.Id}> Ugh, fine!"
                 };
-                var answer = replies[new Random().Next(replies.Count - 1)];
+                var answer = replies[new Random().Next(replies.Count)];
                 await Context.Channel.SendMessageAsync(answer);
             }
             else

@@ -60,33 +60,34 @@ namespace botof37s.Modules
             else
             {
                 var guilds = ((DiscordSocketClient)Context.Client).Guilds;
-                foreach(SocketGuild guild in guilds)
+                foreach (SocketGuild guild in guilds)
                 {
-                    foreach(IMessageChannel channel in guild.TextChannels)
+                    foreach (IMessageChannel channel in guild.TextChannels)
                     {
                         try
                         {
                             messig = await channel.GetMessageAsync(ulong.Parse(uwuid));
                         }
-                        catch(Exception)
+                        catch (Exception)
                         {
-                            
+
                         }
                         if (messig != null)
                             goto stop;
                     }
                 }
             stop:;
-                if(messig == null)
+                if (messig == null)
                 {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sorry, but i'm having trouble finding that message, please try again");
+                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sowwy, but i'm having twoubwe finding that message, please twy again >w<");
                     return;
                 }
                 uwu = messig.Content;
 
             }
-        
-            string[] faces = new string[] { "(・`ω´・)", ";;w;;", "owo", "UwU", ">w<", "^w^", "OwO" };
+
+            string[] faces = new string[] { "(・`ω´・)", ";;w;;", "owo", "UwU", ">w<", "^w^", "OwO", "UwU", "ÚwÚ", "^-^", ":3", "x3" };
+            string[] actions = new string[] { @"\*blushes\*", @"\*whispers to self\*", @"\*cries\*", @"\*screams\*", @"\*sweats\*", @"\*twerks\*", @"\*runs away\*", @"\*screeches\*", @"\*walks away\*", @"\*sees bulge\*", @"\*looks at you\*", @"\*notices buldge\*", @"\*starts twerking\*", @"\*huggies tightly\*", @"\*boops your nose\*", @"\*calls Simmo a fuwwy\*" };
             uwu = Regex.Replace(uwu, "(?:r|l)", "w");
             uwu = Regex.Replace(uwu, "(?:R|L)", "W");
             uwu = Regex.Replace(uwu, "th([aeiouAEIOU])", "d$1");
@@ -96,9 +97,24 @@ namespace botof37s.Modules
             uwu = Regex.Replace(uwu, "Na", "Nya");
             uwu = Regex.Replace(uwu, "NA", "NYA");
             uwu = Regex.Replace(uwu, "ove ", "uv");
-            Random r = new Random();
-            uwu = Regex.Replace(uwu, @"\!+", $" {faces[r.Next(faces.Length)]}!");
-            uwu += $" {faces[r.Next(faces.Length)]}";
+            var words = uwu.Split(" ");
+            for(int i = 0; i < words.Length;  i++)
+            {
+
+                if(new Random().Next(11) == 3)
+                {
+                    char start = words[i].ToCharArray()[0];
+                    words[i] = start + "-" + words[i];
+                }else if(new Random().Next(51) == 11)
+                {
+                    words[i] = faces[new Random().Next(faces.Length)] + " " + words[i];
+                }else if(new Random().Next(101) == 69)
+                {
+                    words[i] = actions[new Random().Next(actions.Length)] + " " + words[i];
+                }
+            }
+            uwu = string.Join(" ", words);
+            uwu += $" {faces[new Random().Next(faces.Length)]}";
             EmbedBuilder builder = new EmbedBuilder();
             builder.WithAuthor(messig.Author.Username + "#" + messig.Author.Discriminator, messig.Author.GetAvatarUrl());
             builder.WithDescription(uwu);
@@ -106,5 +122,7 @@ namespace botof37s.Modules
             builder.WithColor(picker.Pick());
             await Context.Channel.SendMessageAsync("", false, builder.Build());
         }
+
     }
+
 }
