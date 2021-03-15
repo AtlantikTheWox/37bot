@@ -104,6 +104,31 @@ namespace botof37s.services
             //REMOVE
             if(message.Author.Id != ulong.Parse("329650083819814913"))
             {
+                if (message.Content.Equals("!quote 1") && (new Random().Next(11) == 3||(DateTime.UtcNow.Month == 4 && DateTime.UtcNow.Day == 1)))
+                {
+                    //April Fools :LUL:
+                    if (DateTime.UtcNow.Month == 4 && DateTime.UtcNow.Day == 1)
+                    {
+                        await (Task.Delay(200));
+                        IMessageChannel contextchannel = (IMessageChannel)message.Channel;
+                        var retrieval = contextchannel.GetMessagesAsync(message, Direction.After, 1).Flatten();
+                        var simbotmessig = await retrieval.LastOrDefaultAsync();
+                        try
+                        {
+                            simbotmessig.DeleteAsync();
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                    EmbedBuilder builder = new EmbedBuilder();
+                    builder.WithAuthor("Quote #1", "https://images-ext-1.discordapp.net/external/HugnJG4NH2p5vdh4FUhaT9i7HF2T_1VhvqbttpWmst8/https/cdn.discordapp.com/icons/608332317290921996/9a2aee39533d63eea03a841621b8e491.jpg");
+                    builder.WithColor(3447003);
+                    builder.WithDescription("I am a fucking furry! I fuck those guys!");
+                    builder.WithFooter("Saved at some point in Ye Olde Times by Simmotipo#6877", "https://images-ext-1.discordapp.net/external/HugnJG4NH2p5vdh4FUhaT9i7HF2T_1VhvqbttpWmst8/https/cdn.discordapp.com/icons/608332317290921996/9a2aee39533d63eea03a841621b8e491.jpg");
+                    await message.Channel.SendMessageAsync(null, false, builder.Build());
+                }
                 return;
             }
             //REMOVE
@@ -261,8 +286,10 @@ namespace botof37s.services
             {
                 TimeSpan ts = DateTime.UtcNow - Convert.ToDateTime(File.ReadAllText("db/customtime.37"));
                 if (ts.TotalMinutes > 90)
+                {
                     custom = false;
-                File.Delete("db/customtime.37");
+                    File.Delete("db/customtime.37");
+                }
             }
             if (!custom)
             {
@@ -301,6 +328,7 @@ namespace botof37s.services
                         Tuple<IAudioClient, Process> te = new Tuple<IAudioClient, Process>(connection, null);
                         _connections[guild.Id] = te;
                     }
+                    await state1.VoiceChannel.DisconnectAsync();
                 }
                 return;
             }
@@ -312,7 +340,7 @@ namespace botof37s.services
                     if (File.Exists($"audio/{File.ReadAllText($"prank/{user.Id}.37")}.wav"))
                     {
                         await Task.Delay(1000);
-                        ConnectToVoice(state2.VoiceChannel, File.ReadAllText($"prank/{user.Id}.37"),user.Id.ToString()).Start();
+                        ConnectToVoice(state2.VoiceChannel, File.ReadAllText($"prank/{user.Id}.37"),user.Id.ToString());
                     }
                 }
             }
@@ -325,6 +353,7 @@ namespace botof37s.services
         public void customFalse()
         {
             custom = false;
+            File.Delete("db/customtime.37");
         }
         public async Task FileExpiryAsync(string key)
         {
