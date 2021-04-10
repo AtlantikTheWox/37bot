@@ -77,7 +77,7 @@ namespace botof37s.Modules
                     last37uname = File.ReadAllLines("db/last37uname.37")[0];
                     if (File.ReadAllLines("db/last37uname.37")[1] == "t")
                     {
-                        last37uname = last37uname + " on Twitch";
+                        last37uname += " on Twitch";
                     }
                 }
                 await Context.Channel.SendMessageAsync($"I'm sorry <@{Context.User.Id}>, but you will have to wait another {Math.Floor(Int32.Parse(_config["Frequency"]) - ts.TotalMinutes)} minutes and {60 - ts.Seconds} seconds. The last 37 was claimed by {last37uname}.");

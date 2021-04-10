@@ -87,7 +87,7 @@ namespace botof37s.Modules
             }
 
             string[] faces = new string[] { "(・`ω´・)", ";;w;;", "owo", "UwU", ">w<", "^w^", "OwO", "UwU", "ÚwÚ", "^-^", ":3", "x3" };
-            string[] actions = new string[] { @"\*blushes\*", @"\*whispers to self\*", @"\*cries\*", @"\*screams\*", @"\*sweats\*", @"\*twerks\*", @"\*runs away\*", @"\*screeches\*", @"\*walks away\*", @"\*sees bulge\*", @"\*looks at you\*", @"\*notices buldge\*", @"\*starts twerking\*", @"\*huggies tightly\*", @"\*boops your nose\*", @"\*calls Simmo a fuwwy\*" };
+            string[] actions = new string[] { @"\*blushes\*", @"\*whispers to self\*", @"\*cries\*", @"\*screams\*", @"\*sweats\*", @"\*twerks\*", @"\*runs away\*", @"\*screeches\*", @"\*walks away\*", @"\*sees bulge\*", @"\*looks at you\*", @"\*notices buldge\*", @"\*starts twerking\*", @"\*huggies tightly\*", @"\*boops your snoot\*", @"\*calls Simmo a fuwwy\*" };
             uwu = Regex.Replace(uwu, "(?:r|l)", "w");
             uwu = Regex.Replace(uwu, "(?:R|L)", "W");
             uwu = Regex.Replace(uwu, "th([aeiouAEIOU])", "d$1");
@@ -108,7 +108,7 @@ namespace botof37s.Modules
                 }else if(new Random().Next(51) == 11)
                 {
                     words[i] = faces[new Random().Next(faces.Length)] + " " + words[i];
-                }else if(new Random().Next(101) == 69)
+                }else if(new Random().Next(150) == 69)
                 {
                     words[i] = actions[new Random().Next(actions.Length)] + " " + words[i];
                 }

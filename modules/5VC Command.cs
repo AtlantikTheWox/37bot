@@ -116,7 +116,7 @@ namespace botof37s.Modules
                 }
                 else
                 {
-                    await Context.Channel.SendMessageAsync("You cant disconnect the bot if its not connected");
+                    await Context.Channel.SendMessageAsync("You cant disconnect the bot if its not connected 🤪");
                     return;
                 }
             }
