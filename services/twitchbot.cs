@@ -110,7 +110,7 @@ namespace botof37s.services
                             last37uname = File.ReadAllLines("db/last37uname.37")[0];
                             if (File.ReadAllLines("db/last37uname.37")[1] == "d")
                             {
-                                last37uname = last37uname + " on Discord";
+                                last37uname += " on Discord";
                             }
                             
                         }

@@ -33,6 +33,7 @@ namespace botof37s.Modules
     {
         public TwitchClient twitchclient { get; set; }
         public IConfiguration _config { get; set; }
+        public DiscordSocketClient _client { get; set; }
 
         [Command("off")]
         [Summary("Well... it turns of the bot")]
@@ -43,6 +44,8 @@ namespace botof37s.Modules
         {
             twitchclient.SendMessage(_config["Broadcaster"], "I'm shutting down and hope I'll be back soon");
             await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Goodbye <:37a:712802388955758614><:37b:712802398854316052><:37c:712802406173245460>");
+            twitchclient.Disconnect();
+            await _client.StopAsync();
             Environment.Exit(37);
         }
     }

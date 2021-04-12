@@ -30,35 +30,33 @@ namespace botof37s.Modules
         [Remarks("all")]
         public async Task UwUfyCommand(string uwuid = null)
         {
-            string uwu = "";
             IMessage messig = null;
+            string uwu = new string(string.Empty);
             if (uwuid == null)
             {
-                IEnumerable<IMessage> message = null;
-                bool isBot = true;
-                int count = 1;
-                while (isBot)
-                {
-                    message = await Context.Channel.GetMessagesAsync(Context.Message, Direction.Before, count).FlattenAsync();
-                    messig = message.LastOrDefault();
 
-                    if (!messig.Author.IsBot)
+                IEnumerable<IMessage>  message = await Context.Channel.GetMessagesAsync(Context.Message, Direction.Before, 100).FlattenAsync();
+                foreach(IMessage messag in message)
+                {
+                    Console.WriteLine(messag.Content);
+                    if (!messag.Author.IsBot)
                     {
-                        if (messig.Content != null && messig.Content != "")
+                        if (messag.Content != null && messag.Content != "")
                         {
-                            if (!messig.Content.StartsWith("/37 "))
+                            if (!messag.Content.StartsWith("/37") && !messag.Content.StartsWith("!")&& !messag.Content.StartsWith("+"))
                             {
-                                isBot = false;
+                                uwu = messag.Content;
+                                messig = messag;
+                                break;
                             }
                         }
                     }
-
-                    count++;
                 }
-                uwu = message.LastOrDefault().Content;
+                
             }
             else
             {
+                
                 var guilds = ((DiscordSocketClient)Context.Client).Guilds;
                 foreach (SocketGuild guild in guilds)
                 {
@@ -87,7 +85,7 @@ namespace botof37s.Modules
             }
 
             string[] faces = new string[] { "(・`ω´・)", ";;w;;", "owo", "UwU", ">w<", "^w^", "OwO", "UwU", "ÚwÚ", "^-^", ":3", "x3" };
-            string[] actions = new string[] { @"\*blushes\*", @"\*whispers to self\*", @"\*cries\*", @"\*screams\*", @"\*sweats\*", @"\*twerks\*", @"\*runs away\*", @"\*screeches\*", @"\*walks away\*", @"\*sees bulge\*", @"\*looks at you\*", @"\*notices buldge\*", @"\*starts twerking\*", @"\*huggies tightly\*", @"\*boops your snoot\*", @"\*calls Simmo a fuwwy\*" };
+            string[] actions = new string[] { @"\*blushes\*", @"\*whispers to self\*", @"\*cries\*", @"\*screams\*", @"\*sweats\*", @"\*runs away\*", @"\*screeches\*", @"\*walks away\*",  @"\*looks at you\*",  @"\*huggies tightly\*", @"\*boops your snoot\*", @"\*calls Simmo a fuwwy\*" };
             uwu = Regex.Replace(uwu, "(?:r|l)", "w");
             uwu = Regex.Replace(uwu, "(?:R|L)", "W");
             uwu = Regex.Replace(uwu, "th([aeiouAEIOU])", "d$1");
