@@ -107,7 +107,7 @@ namespace botof37s.Modules
         [Summary("Adds an activity to the default list the bot picks from when no custom activity is set")]
         [Name("➕ addactivity <playing|listening|watching> <activity>")]
         [Remarks("authorized")]
-        public async Task AddactivitycommandAsync(string type = "reset", [Remainder] string activity = null)
+        public async Task AddactivitycommandAsync(string type = null, [Remainder] string activity = null)
         {
             switch (type)
             {
