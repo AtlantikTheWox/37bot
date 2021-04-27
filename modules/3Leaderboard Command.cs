@@ -61,7 +61,7 @@ namespace botof37s.Modules
             string lb = "";
             int b = 1;
             builder.WithAuthor("37Gang-Leaderboard", "https://cdn.discordapp.com/app-icons/737060692527415466/c64109fbdff1a1f6dfd7515eaec5198d.png?size=512", "https://bit.ly/37status");
-            builder.WithFooter("If your Twitch account is listed seperately, please use '/37 link' to link your accounts", "https://cdn.discordapp.com/emojis/734132648800419880.png");
+            builder.WithFooter("Accuracy of these values can not be guaranteed", "https://cdn.discordapp.com/emojis/734132648800419880.png");
             foreach (Tuple<string, int> kvp in leaderboard)
             {
                 string count;

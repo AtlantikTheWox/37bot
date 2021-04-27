@@ -77,7 +77,7 @@ namespace botof37s.Modules
             stop:;
                 if (messig == null)
                 {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sowwy, but i'm having twoubwe finding that message, please twy again >w<");
+                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sowwy, but i'm having twoubwe finding dat message, please twy again >w<");
                     return;
                 }
                 uwu = messig.Content;
@@ -85,7 +85,7 @@ namespace botof37s.Modules
             }
 
             string[] faces = new string[] { "(・`ω´・)", ";;w;;", "owo", "UwU", ">w<", "^w^", "OwO", "UwU", "ÚwÚ", "^-^", ":3", "x3" };
-            string[] actions = new string[] { @"\*blushes\*", @"\*whispers to self\*", @"\*cries\*", @"\*screams\*", @"\*sweats\*", @"\*runs away\*", @"\*screeches\*", @"\*walks away\*",  @"\*looks at you\*",  @"\*huggies tightly\*", @"\*boops your snoot\*", @"\*calls Simmo a fuwwy\*" };
+            string[] actions = new string[] { @"\*blushes\*", @"\*whispers to self\*", @"\*cries\*", @"\*screams\*", @"\*sweats\*", @"\*runs away\*", @"\*screeches\*", @"\*walks away\*",  @"\*looks at you\*",  @"\*huggies tightly\*", @"\*boops your snoot\*" };
             uwu = Regex.Replace(uwu, "(?:r|l)", "w");
             uwu = Regex.Replace(uwu, "(?:R|L)", "W");
             uwu = Regex.Replace(uwu, "th([aeiouAEIOU])", "d$1");

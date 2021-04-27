@@ -152,20 +152,21 @@ namespace botof37s.services
                     }
                     else
                     {
-                        twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} This account is currently not pending verification. If you are trying to verify your account please check if you made a typo.");
+                        twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} This account is currently not pending verification. If you are trying to verify your account please check if you have made a typo.");
                     }
 
                 }
             }
             else if (e.ChatMessage.Message.Contains("37 "))
             {
-                int rnd = new Random().Next(0, 6);
+                int rnd = new Random().Next(0, 7);
                 if (rnd == 0) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Noice");
                 if (rnd == 1) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} You called?");
                 if (rnd == 2) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Harry says \"Fuck sake\"");
                 if (rnd == 3) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} I see, so that's how it's gonna be huh?");
                 if (rnd == 4) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} I'm just gonna silently judge you");
                 if (rnd == 5) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Wow, you think this is funny");
+                if (rnd == 6) twitchclient.SendMessage(e.ChatMessage.Channel, $"@{e.ChatMessage.Username} Haha, funy failed test numba");
             }
             
         }

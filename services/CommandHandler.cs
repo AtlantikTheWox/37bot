@@ -175,7 +175,7 @@ namespace botof37s.services
                     await message.Channel.SendMessageAsync(null,false,builder.Build()); 
                 }
                 */
-                else if (message.Content.Contains("37 "))
+                else if (message.Content.Contains(" 37"))
                 {
                     try
                     {
@@ -251,7 +251,8 @@ namespace botof37s.services
         }
         private Task ReadyAsync()
         {
-            twitchclient.Reconnect();
+            if(twitchclient.IsConnected)
+                twitchclient.Reconnect();
             Console.WriteLine($"Connected as -> [{_client.CurrentUser}]");
             if(File.Exists("db/customtime.37"))
             {

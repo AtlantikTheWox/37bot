@@ -109,6 +109,9 @@ namespace botof37s.Modules
         [Remarks("authorized")]
         public async Task AddactivitycommandAsync(string type = null, [Remainder] string activity = null)
         {
+            Authorisationcheck authorisationcheck = new Authorisationcheck();
+            if (!authorisationcheck.Check(Context.User.Id, _config))
+                return;
             switch (type)
             {
                 

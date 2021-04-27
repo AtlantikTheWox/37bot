@@ -139,7 +139,7 @@ namespace botof37s.Modules
                 }
                 if (!File.Exists($"audio/{sound.ToLower()}.wav"))
                 {
-                    await Context.Channel.SendMessageAsync("I'm sorry, but i dont know that sound (yet). Check \"/37 vc list\" for a list of available sounds\"");
+                    await Context.Channel.SendMessageAsync("I'm sorry, but i dont know that sound (yet). Check \"/37 vc list\" for a list of available sounds or ask my owner to add the sound you wanted");
                     return;
                 }
                 try
@@ -205,7 +205,7 @@ namespace botof37s.Modules
                 {
                     await ((SocketVoiceChannel)(Context.User as IVoiceState).VoiceChannel).DisconnectAsync();
                 }
-                catch(System.NullReferenceException)
+                catch(NullReferenceException)
                 {
 
                 }
