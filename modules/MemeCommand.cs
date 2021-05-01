@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration.Json;
 using botof37s;
 using botof37s.services;
 using colorpicker;
-//this is a test text 
+//this is a different test text 
 namespace botof37s.Modules
 {
 
