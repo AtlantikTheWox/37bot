@@ -29,7 +29,7 @@ namespace botof37s.Modules
         [Command("activity")]
         [Alias("status")]
         [Summary("Sets the activity of the bot")]
-        [Name("💬 activity <reset|playing|listening|watching> (<activity>)")]
+        [Name("💬 activity <reset|playing|listening|watching> <activity>")]
         [Remarks("authorized")]
         public async Task ActivitycommandAsync(string type = "reset", [Remainder] string activity = null)
         {

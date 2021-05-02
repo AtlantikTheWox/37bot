@@ -45,8 +45,9 @@ namespace botof37s
             if (!Directory.Exists("authorized")) Directory.CreateDirectory("authorized");
             if (!Directory.Exists("twitch")) Directory.CreateDirectory("twitch");
             if (!Directory.Exists("twitchlink")) Directory.CreateDirectory("twitchlink");
-            if (!Directory.Exists("twitchlink")) Directory.CreateDirectory("twitchlink");
             if (!Directory.Exists("prank")) Directory.CreateDirectory("prank");
+            if (!Directory.Exists("wheelspoof")) Directory.CreateDirectory("wheelspoof");
+            if (!Directory.Exists("wheelspoof/barcharts")) Directory.CreateDirectory("wheelspoof/barcharts");
 
             DirectoryInfo di = new DirectoryInfo("twitchlink");
             foreach(FileInfo file in di.GetFiles())
