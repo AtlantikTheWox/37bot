@@ -61,7 +61,7 @@ namespace botof37s.Modules
             string lb = "";
             int b = 1;
             builder.WithAuthor("37Gang-Leaderboard", "https://cdn.discordapp.com/app-icons/737060692527415466/c64109fbdff1a1f6dfd7515eaec5198d.png?size=512", "https://bit.ly/37status");
-            builder.WithFooter("Accuracy of these values can not be guaranteed", "https://cdn.discordapp.com/emojis/734132648800419880.png");
+            builder.WithFooter("Accuracy of these values can not be guaranteed", "https://cdn.discordapp.com/avatars/329650083819814913/33b46ac7c4bfa97c6df65b108fd8c008.png?size=512");
             foreach (Tuple<string, int> kvp in leaderboard)
             {
                 string count;

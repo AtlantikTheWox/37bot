@@ -73,7 +73,7 @@ namespace botof37s.Modules
             await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Successfully queued the user for a meme!");
             EmbedBuilder builder = new EmbedBuilder();
 
-            builder.WithFooter("No copyright infringement intended Kappa", "https://cdn.discordapp.com/emojis/734132648800419880.png");
+            builder.WithFooter("No copyright infringement intended Kappa", "https://cdn.discordapp.com/avatars/329650083819814913/33b46ac7c4bfa97c6df65b108fd8c008.png?size=512");
             var tfile = TagLib.File.Create($"audio/{mp3}.wav");
             string song = tfile.Tag.Title;
             string artist = tfile.Tag.Performers.FirstOrDefault();

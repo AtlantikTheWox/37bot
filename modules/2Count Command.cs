@@ -58,7 +58,7 @@ namespace botof37s.Modules
             stop:;
             builder.WithAuthor("37 Counter", "https://cdn.discordapp.com/app-icons/737060692527415466/c64109fbdff1a1f6dfd7515eaec5198d.png?size=512", "https://bit.ly/37status");
             builder.AddField($"This is how many 37s have been claimed:", $"{counter}", true);
-            builder.WithFooter($"If you encounter any issues contact {admin}", "https://cdn.discordapp.com/emojis/734132648800419880.png");
+            builder.WithFooter($"If you encounter any issues contact {admin}", "https://cdn.discordapp.com/avatars/329650083819814913/33b46ac7c4bfa97c6df65b108fd8c008.png?size=512");
             Colorpicker picker = new Colorpicker();
             builder.WithColor((uint)picker.Pick());
             var embed = builder.Build();

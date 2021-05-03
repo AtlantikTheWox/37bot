@@ -96,7 +96,6 @@ namespace botof37s.Modules
             {
                 HttpResponseMessage response = await client.GetAsync($"https://gamblingbot.app/api/games/fortune-wheel-start");
                 string responsestring = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responsestring);
                 if (responsestring == "invalid user")
                 {
                     await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> The allmighty bot didnt like that one. This may be because your token has expired.");

@@ -54,7 +54,7 @@ namespace botof37s.Modules
             {
                 EmbedBuilder builder = new EmbedBuilder();
                 builder.WithAuthor("37 vc sounds", "https://cdn.discordapp.com/app-icons/737060692527415466/c64109fbdff1a1f6dfd7515eaec5198d.png?size=512", "https://bit.ly/37status");
-                builder.WithFooter("No copyright infringement intended Kappa", "https://cdn.discordapp.com/emojis/734132648800419880.png");
+                builder.WithFooter("No copyright infringement intended Kappa", "https://cdn.discordapp.com/avatars/329650083819814913/33b46ac7c4bfa97c6df65b108fd8c008.png?size=512");
                 DirectoryInfo di = new DirectoryInfo("audio");
                 foreach(FileInfo file in di.GetFiles())
                 {
@@ -160,7 +160,7 @@ namespace botof37s.Modules
                 }
                 EmbedBuilder builder = new EmbedBuilder();
                 
-                builder.WithFooter("No copyright infringement intended Kappa", "https://cdn.discordapp.com/emojis/734132648800419880.png");
+                builder.WithFooter("No copyright infringement intended Kappa", "https://cdn.discordapp.com/avatars/329650083819814913/33b46ac7c4bfa97c6df65b108fd8c008.png?size=512");
                 var tfile = TagLib.File.Create($"audio/{sound}.wav");
                 string song = tfile.Tag.Title;
                 string artist = tfile.Tag.Performers.FirstOrDefault();

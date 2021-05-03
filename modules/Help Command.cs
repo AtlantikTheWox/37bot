@@ -86,7 +86,7 @@ namespace botof37s.Modules
         stop:;
             Colorpicker colorpicker = new Colorpicker();
             embedBuilder.WithColor(colorpicker.Pick());
-            embedBuilder.WithFooter($"If you encounter any issues contact {admin}", "https://cdn.discordapp.com/emojis/734132648800419880.png");
+            embedBuilder.WithFooter($"If you encounter any issues contact {admin}", "https://cdn.discordapp.com/avatars/329650083819814913/33b46ac7c4bfa97c6df65b108fd8c008.png?size=512");
             await ReplyAsync(null, false, embedBuilder.Build());
         }
     }
