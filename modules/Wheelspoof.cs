@@ -60,6 +60,7 @@ namespace botof37s.Modules
                 await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> This token is currently already being used. If you think this is a mistake contact my owner");
                 return;
             }
+            DateTime lastreminder = new DateTime();
             await File.WriteAllTextAsync($"wheelspoof/{token}","uwu");
             HttpClient client = new HttpClient();
             Dictionary<int, int> distrib = new Dictionary<int, int>
@@ -110,8 +111,9 @@ namespace botof37s.Modules
                 }
                 if (!startconfirmation)
                 {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I have started up the automatic spin feature for you. Be advised that this may take upwards of multiple hours on some days.");
+                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I have started up the automatic spin feature for you. Be advised that this may take upwards of multiple hours on some days. I will keep you updated around every 15 minutes.");
                     startconfirmation = true;
+                    lastreminder = DateTime.Now;
                 }
                 try
                 {
@@ -124,7 +126,17 @@ namespace botof37s.Modules
                     File.Delete($"wheelspoof/{token}");
                     return;
                 }
-                
+                if((DateTime.Now - lastreminder).TotalMinutes > 15)
+                {
+                    int counter = 0;
+                    foreach(KeyValuePair<int,int> kvp in distrib)
+                    {
+                        counter += kvp.Value;
+                    }
+                    TimeSpan temp = DateTime.UtcNow - start;
+                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Still rolling! I have been rolling for {temp.Hours} hours, {temp.Minutes} minutes and {temp.Seconds} seconds and missed {counter} times so far :(");
+                    lastreminder = DateTime.Now;
+                }
                 if (responsestring == "{\"win\":0}")
                 {
                     mil = true;
