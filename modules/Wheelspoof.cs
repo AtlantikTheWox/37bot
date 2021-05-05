@@ -79,6 +79,14 @@ namespace botof37s.Modules
                 { 11, 0 },
                 
             };
+            List<string> agents = new List<string>()
+            {
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0",
+                "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/5352 (KHTML, like Gecko) Chrome/37.0.825.0 Mobile Safari/5352",
+                "Opera/9.79 (X11; Linux i686; en-US) Presto/2.10.342 Version/10.00",
+                "Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_2 like Mac OS X; en-US) AppleWebKit/532.43.6 (KHTML, like Gecko) Version/3.0.5 Mobile/8B115 Safari/6532.43.6",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 89.0.4389.90 Safari / 537.36"
+            };
             client.DefaultRequestHeaders.Add("Accept", "application / json, text / plain, */*");
             client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
             client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
@@ -88,7 +96,7 @@ namespace botof37s.Modules
             client.DefaultRequestHeaders.Add("Host", "gamblingbot.app");
             client.DefaultRequestHeaders.Add("Pragma", "no-cache");
             client.DefaultRequestHeaders.Add("Referer", "https://gamblingbot.app/games/fortune-wheel");
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0");
+            client.DefaultRequestHeaders.Add("User-Agent", agents[new Random().Next(agents.Count())]);
             DateTime start = DateTime.UtcNow;
             bool mil = false;
             bool startconfirmation = false;
@@ -98,7 +106,7 @@ namespace botof37s.Modules
                 string responsestring = await response.Content.ReadAsStringAsync();
                 if (responsestring == "invalid user")
                 {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> The allmighty bot didnt like that one. This may be because your token has expired.");
+                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> The allmighty bot didnt like that one. This may be because your token has expired or because the gambling bot is having technical difficulties.");
                     if(File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
                     return;
                 }
