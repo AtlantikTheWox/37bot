@@ -27,6 +27,7 @@ namespace botof37s.Modules
         [Remarks("all")]
         public async Task ThirtysevenCommand()
         {
+            
             DateTime last37 = new DateTime();
             IConfiguration _config;
 

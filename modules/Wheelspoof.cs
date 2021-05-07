@@ -45,6 +45,10 @@ namespace botof37s.Modules
                 await Context.Message.DeleteAsync();
                 return;
             }
+            if (File.Exists($"wheelspoof/tokens/{Context.User.Id}.37"))
+            {
+                token = File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37");
+            }
             if (token == null)
             {
                 await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> You need to provide your token. If you don't know how to get your token use \"help\" instead of it to get a tutorial.");
@@ -85,7 +89,7 @@ namespace botof37s.Modules
                 "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/5352 (KHTML, like Gecko) Chrome/37.0.825.0 Mobile Safari/5352",
                 "Opera/9.79 (X11; Linux i686; en-US) Presto/2.10.342 Version/10.00",
                 "Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_2 like Mac OS X; en-US) AppleWebKit/532.43.6 (KHTML, like Gecko) Version/3.0.5 Mobile/8B115 Safari/6532.43.6",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 89.0.4389.90 Safari / 537.36"
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
             };
             client.DefaultRequestHeaders.Add("Accept", "application / json, text / plain, */*");
             client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
@@ -100,6 +104,34 @@ namespace botof37s.Modules
             DateTime start = DateTime.UtcNow;
             bool mil = false;
             bool startconfirmation = false;
+            HttpResponseMessage cooldownresponse = await client.GetAsync("https://gamblingbot.app/api/games/fortune-wheel-free-cooldown");
+            if(await cooldownresponse.Content.ReadAsStringAsync() == "invalid user")
+            {
+                await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> The allmighty bot didnt like that one. This may be because your token has expired or because the gambling bot is having technical difficulties.");
+                Console.WriteLine("Invalid free cooldown");
+                if (File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
+                if (File.Exists($"wheelspoof/tokens/{Context.User.Id}.37")) File.Delete($"wheelspoof/tokens/{Context.User.Id}.37");
+                return;
+            }
+            else
+            {
+                DateTimeOffset unixstart = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(await cooldownresponse.Content.ReadAsStringAsync()));
+                unixstart = unixstart.AddHours(22);
+                if (DateTime.UtcNow.CompareTo(unixstart.UtcDateTime) < 0)
+                {
+                    TimeSpan cooldown = unixstart - DateTime.UtcNow;
+                    string oncooldownresponse = $"<@{Context.User.Id}> Your spin is still on cooldown for {cooldown.Hours} hours, {cooldown.Minutes} minutes and {cooldown.Seconds} seconds. Please try again then.";
+                    if (!File.Exists($"wheelspoof/tokens/{Context.User.Id}.37") || File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37") != token)
+                    {
+                        File.WriteAllText($"wheelspoof/tokens/{Context.User.Id}.37", token);
+                        oncooldownresponse += " I have saved you token for you, which means you wont need to provide it next time";
+                    }
+                    if (File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
+                    await Context.Channel.SendMessageAsync(oncooldownresponse);
+                    return;
+                }
+                
+            }
             while (!mil)
             {
                 HttpResponseMessage response = await client.GetAsync($"https://gamblingbot.app/api/games/fortune-wheel-start");
@@ -110,17 +142,17 @@ namespace botof37s.Modules
                     if(File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
                     return;
                 }
-                if (responsestring == "Insufficient amount of gems")
-                {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Your spin appears to still be on cooldown, please try again later");
-                    File.Delete($"wheelspoof/{token}");
-                    return;
-                }
                 if (!startconfirmation)
                 {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I have started up the automatic spin feature for you. Be advised that this may take upwards of multiple hours on some days. I will keep you updated around every 15 minutes.");
+                    string confirmationresponse = $"<@{Context.User.Id}> I have started up the automatic spin feature for you. Be advised that this may take upwards of multiple hours on some days. I will keep you updated around every 15 minutes.";
                     startconfirmation = true;
                     lastreminder = DateTime.Now;
+                    if (!File.Exists($"wheelspoof/tokens/{Context.User.Id}.37")||File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37") != token)
+                    {
+                        File.WriteAllText($"wheelspoof/tokens/{Context.User.Id}.37", token);
+                        responsestring += " I have also saved the token for you. If you want to roll with the same token next time you dont have to provide it again";
+                    }
+                    await Context.Channel.SendMessageAsync(confirmationresponse);
                 }
                 try
                 {

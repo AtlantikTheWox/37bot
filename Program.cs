@@ -34,12 +34,14 @@ namespace botof37s
         // setup our fields we assign later
         public readonly IConfiguration _config;
         public DiscordSocketClient _client;
+        public DiscordRestClient rclient;
         public TwitchClient twitchclient;
         public Dictionary<ulong, Tuple<IAudioClient, Process>> _connections = new Dictionary<ulong, Tuple<IAudioClient, Process>>();
         
 
         static void Main(string[] args)
         {
+            _ = args;
             if (!Directory.Exists("db")) Directory.CreateDirectory("db");
             if (!Directory.Exists("leaderboard")) Directory.CreateDirectory("leaderboard");
             if (!Directory.Exists("authorized")) Directory.CreateDirectory("authorized");
@@ -48,6 +50,7 @@ namespace botof37s
             if (!Directory.Exists("prank")) Directory.CreateDirectory("prank");
             if (!Directory.Exists("wheelspoof")) Directory.CreateDirectory("wheelspoof");
             if (!Directory.Exists("wheelspoof/barcharts")) Directory.CreateDirectory("wheelspoof/barcharts");
+            if (!Directory.Exists("wheelspoof/tokens")) Directory.CreateDirectory("wheelspoof/tokens");
 
             DirectoryInfo di = new DirectoryInfo("twitchlink");
             foreach(FileInfo file in di.GetFiles())
@@ -71,6 +74,7 @@ namespace botof37s
             };
             ConnectionCredentials credentials = new ConnectionCredentials(_config["Twitch"], _config["TwitchOauth"]);
             WebSocketClient customClient = new WebSocketClient(clientOptions);
+            rclient = new DiscordRestClient();
             twitchclient = new TwitchClient(customClient);
             twitchclient.Initialize(credentials, _config["Broadcaster"]);
             twitchclient.Connect();
@@ -95,6 +99,7 @@ namespace botof37s
 
                 // this is where we get the Token value from the configuration file, and start the bot
                 await client.LoginAsync(TokenType.Bot, _config["Token"]);
+                await rclient.LoginAsync(TokenType.Bot, _config["Token"]);
                 await client.StartAsync();
                 Twitchbot twitchbot = new Twitchbot(twitchclient, _config, _client);
                 // sets the bots status indicator to "Do not disturb" if its still on cooldown
@@ -139,6 +144,7 @@ namespace botof37s
                 .AddSingleton<CommandHandler>()
                 .AddSingleton(twitchclient)
                 .AddSingleton(_connections)
+                .AddSingleton(rclient)
                 .BuildServiceProvider();
         }
         

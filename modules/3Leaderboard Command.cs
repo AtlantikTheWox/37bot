@@ -21,6 +21,9 @@ namespace botof37s.Modules
 
     public class Leaderboardcommand : ModuleBase
     {
+        public IConfiguration _config { get; set; }
+        public DiscordSocketClient _client { get; set; }
+        public DiscordRestClient rclient { get; set; }
 
         [Command("ranking")]
         [Alias("leaderboard")]
@@ -29,6 +32,7 @@ namespace botof37s.Modules
         [Remarks("all")]
         public async Task LeaderboardCommand()
         {
+            
             DirectoryInfo di = new DirectoryInfo("leaderboard");
             Dictionary<long, int> temp= new Dictionary<long, int>();
             List<Tuple<string,int>> d =  new List<Tuple<string, int>>();
@@ -38,21 +42,26 @@ namespace botof37s.Modules
             }
             foreach(KeyValuePair<long,int> kvp in temp)
             {
-                string username = "Unknown User";
-                var client = (DiscordSocketClient)Context.Client;
-                var guildList = client.Guilds;
-                foreach (SocketGuild guild in guildList)
+                string username = null;
+                
+                var user = _client.GetUser((ulong)kvp.Key);
+
+                if (user == null)
                 {
-                    foreach (SocketUser user in guild.Users)
+                    var farsearch = await rclient.GetUserAsync((ulong)kvp.Key);
+                    if(farsearch == null)
                     {
-                        if((long)user.Id == kvp.Key)
-                        {
-                            username = user.Username;
-                            goto stop;
-                        }
+                        username = "Unknown User";
+                    }
+                    else
+                    {
+                        username = farsearch.Username;
                     }
                 }
-            stop:;
+                else
+                {
+                    username = user.Username;
+                }
                 Tuple<string, int> entry = new Tuple<string, int>(username,kvp.Value);
                 d.Add(entry);
             }
