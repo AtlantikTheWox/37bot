@@ -38,7 +38,6 @@ namespace botof37s.Modules
                 IEnumerable<IMessage>  message = await Context.Channel.GetMessagesAsync(Context.Message, Direction.Before, 100).FlattenAsync();
                 foreach(IMessage messag in message)
                 {
-                    Console.WriteLine(messag.Content);
                     if (!messag.Author.IsBot)
                     {
                         if (messag.Content != null && messag.Content != "")
