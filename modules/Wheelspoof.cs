@@ -113,6 +113,17 @@ namespace botof37s.Modules
                 if (File.Exists($"wheelspoof/tokens/{Context.User.Id}.37")) File.Delete($"wheelspoof/tokens/{Context.User.Id}.37");
                 return;
             }
+            else if(await cooldownresponse.Content.ReadAsStringAsync() == "")
+            {
+                string neverrolledresponse = $"<@{Context.User.Id}> I am sorry, but it appears you havent rolled the wheel before. For some reason i cant roll for you if thats the case. Please roll the wheel manually and come back tomorrow.";
+                if (!File.Exists($"wheelspoof/tokens/{Context.User.Id}.37") || File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37") != token)
+                {
+                    File.WriteAllText($"wheelspoof/tokens/{Context.User.Id}.37", token);
+                    neverrolledresponse += " I have saved you token for you, which means you wont need to provide it next time";
+                }
+                await Context.Channel.SendMessageAsync(neverrolledresponse);
+                return;
+            }
             else
             {
                 DateTimeOffset unixstart = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(await cooldownresponse.Content.ReadAsStringAsync()));
@@ -130,7 +141,6 @@ namespace botof37s.Modules
                     await Context.Channel.SendMessageAsync(oncooldownresponse);
                     return;
                 }
-                
             }
             while (!mil)
             {
@@ -150,12 +160,13 @@ namespace botof37s.Modules
                     if (!File.Exists($"wheelspoof/tokens/{Context.User.Id}.37")||File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37") != token)
                     {
                         File.WriteAllText($"wheelspoof/tokens/{Context.User.Id}.37", token);
-                        responsestring += " I have also saved the token for you. If you want to roll with the same token next time you dont have to provide it again";
+                        confirmationresponse += " I have also saved the token for you. If you want to roll with the same token next time you dont have to provide it again";
                     }
                     await Context.Channel.SendMessageAsync(confirmationresponse);
                 }
                 try
                 {
+                    
                     int key = int.Parse(responsestring.Replace("{\"win\":", "").Replace("}", ""));
                     distrib[key]++;
                 }

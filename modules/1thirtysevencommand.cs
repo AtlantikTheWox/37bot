@@ -20,7 +20,7 @@ namespace botof37s.Modules
 
     public class Thirtysevencommand : ModuleBase
     {
-
+        public IConfiguration _config { get; set; }
         [Command("37")]
         [Alias("/37")]
         [Summary("Claims a 37")]
@@ -29,13 +29,8 @@ namespace botof37s.Modules
         {
             
             DateTime last37 = new DateTime();
-            IConfiguration _config;
 
-            var _builder = new ConfigurationBuilder().
-            SetBasePath(AppContext.BaseDirectory).
-            AddJsonFile(path: "config.json");
-
-            _config = _builder.Build();
+            
             if (File.Exists("db/lastmessage.37"))
             {
                 last37 = Convert.ToDateTime(File.ReadAllText("db/lastmessage.37"));
@@ -45,14 +40,8 @@ namespace botof37s.Modules
             {
                 int personalcount = 0;
                 int counter = 0;
-                if (File.Exists($"leaderboard/{Context.User.Id}.37"))
-                {
-                    personalcount = Int32.Parse(File.ReadAllText($"leaderboard/{Context.User.Id}.37"));
-                }
-                if (File.Exists("db/counter.37"))
-                {
-                    counter = int.Parse(File.ReadAllText("db/counter.37"));
-                }
+                if (File.Exists($"leaderboard/{Context.User.Id}.37")) personalcount = Int32.Parse(File.ReadAllText($"leaderboard/{Context.User.Id}.37"));
+                if (File.Exists("db/counter.37")) counter = int.Parse(File.ReadAllText("db/counter.37"));
                 File.WriteAllText("db/lastmessage.37", DateTime.UtcNow.ToString());
                 File.WriteAllText($"leaderboard/{Context.User.Id}.37", (personalcount + 1).ToString());
                 File.WriteAllText("db/last37uname.37", $"{Context.User.Username}\nd");
@@ -76,10 +65,8 @@ namespace botof37s.Modules
                 if (File.Exists("db/last37uname.37"))
                 {
                     last37uname = File.ReadAllLines("db/last37uname.37")[0];
-                    if (File.ReadAllLines("db/last37uname.37")[1] == "t")
-                    {
-                        last37uname += " on Twitch";
-                    }
+                    if (File.ReadAllLines("db/last37uname.37")[1] == "t") last37uname += " on Twitch";
+                    
                 }
                 await Context.Channel.SendMessageAsync($"I'm sorry <@{Context.User.Id}>, but you will have to wait another {Math.Floor(Int32.Parse(_config["Frequency"]) - ts.TotalMinutes)} minutes and {60 - ts.Seconds} seconds. The last 37 was claimed by {last37uname}.");
             }
