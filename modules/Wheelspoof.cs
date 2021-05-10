@@ -41,7 +41,7 @@ namespace botof37s.Modules
             if (!authorisationcheck.Check(Context.User.Id, _config)) return;
             if (Context.Channel.GetType().ToString() != "Discord.WebSocket.SocketDMChannel")
             {
-                await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Due to the sensitive nature of this command it is resticted to dms only");
+                await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Due to its sensitive nature, this command is resticted to dms only");
                 await Context.Message.DeleteAsync();
                 return;
             }
@@ -115,11 +115,11 @@ namespace botof37s.Modules
             }
             else if(await cooldownresponse.Content.ReadAsStringAsync() == "")
             {
-                string neverrolledresponse = $"<@{Context.User.Id}> I am sorry, but it appears you havent rolled the wheel before. For some reason i cant roll for you if thats the case. Please roll the wheel manually and come back tomorrow.";
+                string neverrolledresponse = $"<@{Context.User.Id}> I am sorry, but it appears you havent rolled the wheel before. For some reason I can't roll for you if thats the case. Please roll the wheel manually once and come back tomorrow.";
                 if (!File.Exists($"wheelspoof/tokens/{Context.User.Id}.37") || File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37") != token)
                 {
                     File.WriteAllText($"wheelspoof/tokens/{Context.User.Id}.37", token);
-                    neverrolledresponse += " I have saved you token for you, which means you wont need to provide it next time";
+                    neverrolledresponse += " I have saved your token for you, which means you wont need to provide it next time.";
                 }
                 await Context.Channel.SendMessageAsync(neverrolledresponse);
                 return;

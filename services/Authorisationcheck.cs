@@ -8,7 +8,6 @@ namespace botof37s.services
 {
     public class Authorisationcheck
     {
-        
         public bool Check(ulong id, IConfiguration _config)
         {
             if (id.ToString() == _config["AdminUserID"])

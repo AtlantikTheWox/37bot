@@ -45,7 +45,6 @@ namespace botof37s.Modules
                             if (!messag.Content.StartsWith("/37") && !messag.Content.StartsWith("!")&& !messag.Content.StartsWith("+"))
                             {
                                 uwu = messag.Content;
-                                messig = messag;
                                 break;
                             }
                         }

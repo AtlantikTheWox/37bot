@@ -54,6 +54,8 @@ namespace botof37s.Modules
                     $"<@{Context.User.Id}> Coming right up!",
                     $"<@{Context.User.Id}> As you wish!",
                     $"<@{Context.User.Id}> I cant believe its not spam!",
+                    $"<@{Context.User.Id}> Congrats, you got it!",
+                    $"<@{Context.User.Id}> Why do I even bother?",
                     $"<@{Context.User.Id}> Ugh, fine!"
                 };
                 var answer = replies[new Random().Next(replies.Count)];

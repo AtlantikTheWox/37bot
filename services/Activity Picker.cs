@@ -33,14 +33,10 @@ namespace botof37s.services
                 $"p Simmo's Mod appreciation simulator {DateTime.Now.Year}",
                 "s 37s@https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 "w Watt being appreciated ❤️",
-                "w Bob spam",
                 "p with my best friends Simbot and VentBot",
                 "l Simbot's favourite song",
                 "s Simbot's favourite song@https://www.youtube.com/watch?v=Mz3Mi_OZYno",
                 $"l \"{title}\" by \"{artist}\""
-                
-
-
             };
             if (File.Exists("db/activities.37"))
             {

@@ -21,6 +21,7 @@ namespace botof37s.Modules
 
     public class Count : ModuleBase
     {
+        public IConfiguration _config { get; set; }
         [Command("count")]
         [Alias("counter")]
         [Summary("Returns a count of all 37s claimed so far")]
@@ -34,13 +35,6 @@ namespace botof37s.Modules
                 counter = int.Parse(File.ReadAllText("db/counter.37"));
             }
             EmbedBuilder builder = new EmbedBuilder();
-            IConfiguration _config;
-
-            var _configbuilder = new ConfigurationBuilder().
-            SetBasePath(AppContext.BaseDirectory).
-            AddJsonFile(path: "config.json");
-
-            _config = _configbuilder.Build();
             var _client = (DiscordSocketClient)Context.Client;
             var guildList = _client.Guilds;
             string admin = "";
