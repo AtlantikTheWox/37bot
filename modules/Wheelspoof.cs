@@ -142,57 +142,87 @@ namespace botof37s.Modules
                     return;
                 }
             }
+            int failedrequests = 0;
             while (!mil)
             {
                 HttpResponseMessage response = await client.GetAsync($"https://gamblingbot.app/api/games/fortune-wheel-start");
                 string responsestring = await response.Content.ReadAsStringAsync();
-                if (responsestring == "invalid user")
-                {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> The allmighty bot didnt like that one. This may be because your token has expired or because the gambling bot is having technical difficulties.");
-                    if(File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
-                    return;
-                }
-                if (!startconfirmation)
-                {
-                    string confirmationresponse = $"<@{Context.User.Id}> I have started up the automatic spin feature for you. Be advised that this may take upwards of multiple hours on some days. I will keep you updated around every 15 minutes.";
-                    startconfirmation = true;
-                    lastreminder = DateTime.Now;
-                    if (!File.Exists($"wheelspoof/tokens/{Context.User.Id}.37")||File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37") != token)
-                    {
-                        File.WriteAllText($"wheelspoof/tokens/{Context.User.Id}.37", token);
-                        confirmationresponse += " I have also saved the token for you. If you want to roll with the same token next time you dont have to provide it again";
-                    }
-                    await Context.Channel.SendMessageAsync(confirmationresponse);
-                }
-                try
-                {
-                    
-                    int key = int.Parse(responsestring.Replace("{\"win\":", "").Replace("}", ""));
-                    distrib[key]++;
-                }
-                catch (FormatException)
-                {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Oops, i didnt expect the following response: \"{responsestring}\" Please contact my owner with this information or try again");
-                    File.Delete($"wheelspoof/{token}");
-                    return;
-                }
-                if((DateTime.Now - lastreminder).TotalMinutes > 15)
-                {
-                    int counter = 0;
-                    foreach(KeyValuePair<int,int> kvp in distrib)
-                    {
-                        counter += kvp.Value;
-                    }
-                    TimeSpan temp = DateTime.UtcNow - start;
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Still rolling! I have been rolling for {temp.Hours} hours, {temp.Minutes} minutes and {temp.Seconds} seconds and missed {counter} times so far :(");
-                    lastreminder = DateTime.Now;
-                }
-                if (responsestring == "{\"win\":0}")
-                {
-                    mil = true;
-                    await Task.Delay(7000);
-                }
                 
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    failedrequests = 0;
+                    if (responsestring == "invalid user")
+                    {
+                        await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> The allmighty bot didnt like that one. This may be because your token has expired or because the gambling bot is having technical difficulties.");
+                        if (File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
+                        return;
+                    }
+                    if (!startconfirmation)
+                    {
+                        string confirmationresponse = $"<@{Context.User.Id}> I have started up the automatic spin feature for you. Be advised that this may take upwards of multiple hours on some days. I will keep you updated around every 15 minutes.";
+                        startconfirmation = true;
+                        lastreminder = DateTime.Now;
+                        if (!File.Exists($"wheelspoof/tokens/{Context.User.Id}.37") || File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37") != token)
+                        {
+                            File.WriteAllText($"wheelspoof/tokens/{Context.User.Id}.37", token);
+                            confirmationresponse += " I have also saved the token for you. If you want to roll with the same token next time you dont have to provide it again";
+                        }
+                        await Context.Channel.SendMessageAsync(confirmationresponse);
+                    }
+                    try
+                    {
+
+                        int key = int.Parse(responsestring.Replace("{\"win\":", "").Replace("}", ""));
+                        distrib[key]++;
+                    }
+                    catch (FormatException)
+                    {
+                        int counter = 0;
+                        foreach (KeyValuePair<int, int> kvp in distrib)
+                        {
+                            counter += kvp.Value;
+                        }
+                        TimeSpan temp = DateTime.UtcNow - start;
+                        await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Oops, i didnt expect the following response after {counter} rolls and {temp.Hours}h {temp.Minutes}m {temp.Seconds}s: \"{responsestring}\" Please contact my owner with this information or try again");
+                        File.Delete($"wheelspoof/{token}");
+                        return;
+                    }
+                    if ((DateTime.Now - lastreminder).TotalMinutes > 15)
+                    {
+                        int counter = 0;
+                        foreach (KeyValuePair<int, int> kvp in distrib)
+                        {
+                            counter += kvp.Value;
+                        }
+                        TimeSpan temp = DateTime.UtcNow - start;
+                        await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Still rolling! I have been rolling for {temp.Hours} hours, {temp.Minutes} minutes and {temp.Seconds} seconds and missed {counter} times so far :(");
+                        lastreminder = DateTime.Now;
+                    }
+                    if (responsestring == "{\"win\":0}")
+                    {
+                        mil = true;
+                        await Task.Delay(7000);
+                    }
+                }
+                else
+                {
+                    if(failedrequests < 10)
+                    {
+                        failedrequests++;
+                    }
+                    else
+                    {
+                        int counter = 0;
+                        foreach (KeyValuePair<int, int> kvp in distrib)
+                        {
+                            counter += kvp.Value;
+                        }
+                        TimeSpan temp = DateTime.UtcNow - start;
+                        await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sorry, but the last 10 requests failed after {counter} sucessfull rolls and a time of {temp.Hours} hours and {temp.Minutes} minutes. The last request failed with the status code \"{response.StatusCode}\" and the response \"{responsestring}\". Please contact my owner with this info or try again later. ");
+                        File.Delete($"wheelspoof/{token}");
+                        return;
+                    }  
+                }
                 await Task.Delay(5000 + new Random().Next(-1000, 1000));
             }
             HttpResponseMessage winresponse = await client.GetAsync($"https://gamblingbot.app/api/games/fortune-wheel-ok");
