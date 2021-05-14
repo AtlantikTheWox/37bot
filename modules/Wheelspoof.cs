@@ -240,7 +240,12 @@ namespace botof37s.Modules
                 Bitmap bitmap = new Bitmap(stream);
                 bitmap.Save($"wheelspoof/barcharts/{Context.Message.Id}.png", System.Drawing.Imaging.ImageFormat.Png);
                 File.Delete($"wheelspoof/{token}");
-                await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Success! After {ts.Hours} hours, {ts.Minutes} minutes and {ts.Seconds} seconds i have managed to make a winning roll! Raw response: \"{await winresponse.Content.ReadAsStringAsync()}\"  Distribution chart: ");
+                int finalcounter = 0;
+                foreach (KeyValuePair<int, int> kvp in distrib)
+                {
+                    finalcounter += kvp.Value;
+                }
+                await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Success! After {ts.Hours} hours, {ts.Minutes} minutes, {ts.Seconds} seconds and {finalcounter} rolls I have managed to make a winning roll! Raw response: \"{await winresponse.Content.ReadAsStringAsync()}\"  Distribution chart: ");
                 await Context.Channel.SendFileAsync($"wheelspoof/barcharts/{Context.Message.Id}.png");
                 File.Delete($"wheelspoof/barcharts/{Context.Message.Id}.png");
             }
