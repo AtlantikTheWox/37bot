@@ -47,7 +47,7 @@ namespace botof37s.Modules
                 await Context.Message.DeleteAsync();
                 return;
             }
-            if (File.Exists($"wheelspoof/tokens/{Context.User.Id}.37"))
+            if (File.Exists($"wheelspoof/tokens/{Context.User.Id}.37") && token == null)
             {
                 token = File.ReadAllText($"wheelspoof/tokens/{Context.User.Id}.37");
             }
@@ -190,7 +190,7 @@ namespace botof37s.Modules
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine($"{DateTime.UtcNow}: Error in wheel response for {Context.User.Username}#{Context.User.Discriminator}: \"{responsestring}\"");
                             Console.ResetColor();
-                            lservice.LogAsync($"Invalid Response: \"{responsestring}\"",LogLevel.Severe,Context);
+                            lservice.LogAsync($"Invalid Response: \"{responsestring}\"", LogLevel.Severe, Context);
                             await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Oops, i didnt expect the following response after {counter} rolls and {temp.Hours}h {temp.Minutes}m {temp.Seconds}s: \"{responsestring}\" Please contact my owner with this information or try again");
                             File.Delete($"wheelspoof/{token}");
                             return;
