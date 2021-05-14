@@ -29,6 +29,7 @@ namespace botof37s.Modules
         public IConfiguration _config { get; set; }
         public DiscordSocketClient _client { get; set; }
         public CommandHandler handler { get; set; }
+        public LogService lservice { get; set; }
 
         [Command("wheel", RunMode = RunMode.Async)]
         [Alias("roll")]
@@ -189,6 +190,7 @@ namespace botof37s.Modules
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine($"{DateTime.UtcNow}: Error in wheel response for {Context.User.Username}#{Context.User.Discriminator}: \"{responsestring}\"");
                             Console.ResetColor();
+                            lservice.LogAsync($"Invalid Response: \"{responsestring}\"",LogLevel.Severe,Context);
                             await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Oops, i didnt expect the following response after {counter} rolls and {temp.Hours}h {temp.Minutes}m {temp.Seconds}s: \"{responsestring}\" Please contact my owner with this information or try again");
                             File.Delete($"wheelspoof/{token}");
                             return;

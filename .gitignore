@@ -347,3 +347,4 @@ libsodium.dll
 opus.dll
 experimentals.cs
 ExampleCommands.cs
+GlobalSuppressions.cs

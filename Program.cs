@@ -35,6 +35,7 @@ namespace botof37s
         public readonly IConfiguration _config;
         public DiscordSocketClient _client;
         public DiscordRestClient rclient;
+        public LogService lservice;
         public TwitchClient twitchclient;
         public Dictionary<ulong, Tuple<IAudioClient, Process>> _connections = new Dictionary<ulong, Tuple<IAudioClient, Process>>();
         
@@ -75,6 +76,7 @@ namespace botof37s
             ConnectionCredentials credentials = new ConnectionCredentials(_config["Twitch"], _config["TwitchOauth"]);
             WebSocketClient customClient = new WebSocketClient(clientOptions);
             rclient = new DiscordRestClient();
+            lservice = new LogService();
             twitchclient = new TwitchClient(customClient);
             twitchclient.Initialize(credentials, _config["Broadcaster"]);
             twitchclient.Connect();
@@ -145,6 +147,7 @@ namespace botof37s
                 .AddSingleton(twitchclient)
                 .AddSingleton(_connections)
                 .AddSingleton(rclient)
+                .AddSingleton(lservice)
                 .BuildServiceProvider();
         }
         

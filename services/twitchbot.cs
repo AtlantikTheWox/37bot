@@ -22,13 +22,13 @@ namespace botof37s.services
 {
     class Twitchbot
     {
-        IConfiguration config;
-        TwitchClient twitchclient;
-        DiscordSocketClient _client;
+        readonly IConfiguration _config;
+        readonly TwitchClient twitchclient;
+        public DiscordSocketClient _client;
         public Twitchbot(TwitchClient tclient, IConfiguration conf, DiscordSocketClient client)
         {
             twitchclient = tclient;
-            config = conf;
+            _config = conf;
             _client = client;
             Main();
         }
@@ -60,13 +60,6 @@ namespace botof37s.services
                 else
                 {
                     DateTime last37 = new DateTime();
-                    IConfiguration _config;
-
-                    var _builder = new ConfigurationBuilder().
-                    SetBasePath(AppContext.BaseDirectory).
-                    AddJsonFile(path: "config.json");
-
-                    _config = _builder.Build();
                     if (File.Exists("db/lastmessage.37"))
                     {
                         last37 = Convert.ToDateTime(File.ReadAllText("db/lastmessage.37"));

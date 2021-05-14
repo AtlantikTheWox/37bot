@@ -38,6 +38,7 @@ namespace botof37s.services
         string delmessig = null;
         bool custom = false;
         public TwitchClient twitchclient;
+        public LogService lservice;
         public Dictionary<ulong, Tuple<IAudioClient, Process>> _connections;
 
         public CommandHandler(IServiceProvider services)
@@ -48,6 +49,7 @@ namespace botof37s.services
             _client = services.GetRequiredService<DiscordSocketClient>();
             twitchclient = services.GetRequiredService<TwitchClient>();
             _connections = services.GetRequiredService<Dictionary<ulong, Tuple<IAudioClient, Process>>>();
+            lservice = services.GetRequiredService<LogService>();
             _services = services;
 
             
@@ -214,12 +216,15 @@ namespace botof37s.services
             if (result.IsSuccess)
             {
                 System.Console.WriteLine($"Command [{command.Value.Name}] executed for -> [{context.User.Username}]");
+                lservice.LogAsync($"Command [{command.Value.Name}] executed",LogLevel.Default,context);
                 return;
             }
 
 
             // failure scenario, let's let the user know
             await context.Channel.SendMessageAsync($"<@{context.User.Id}> something went wrong -> [{result}]!");
+            await lservice.LogAsync($"Command execution failed with exception: {result}", LogLevel.Error,context);
+
         }
         private Task ReadyAsync()
         {
