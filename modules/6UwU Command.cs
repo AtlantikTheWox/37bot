@@ -75,7 +75,7 @@ namespace botof37s.Modules
             stop:;
                 if (messig == null)
                 {
-                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sowwy, but i'm having twoubwe finding dat message, please twy again >w<");
+                    await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> I'm sowwy, but i'm having twoubwe finding dat message, pwease twy again >w<");
                     return;
                 }
                 uwu = messig.Content;
