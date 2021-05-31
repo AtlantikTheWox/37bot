@@ -25,6 +25,8 @@ using System.Linq;
 using botof37s.Modules;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Net;
+using System.Drawing;
 
 namespace botof37s.services
 {
@@ -245,6 +247,7 @@ namespace botof37s.services
                 Activitypicker picker = new Activitypicker();
                 picker.Pick(_client);
             }
+            if (File.Exists($"wheelspoof/tokens/{_config["AdminUserID"]}.37")) Autoroll(File.ReadAllText($"wheelspoof/tokens/{_config["AdminUserID"]}.37"));
             return Task.CompletedTask;
         }
         private async Task OnVoiceStateUpdated(SocketUser user, SocketVoiceState state1, SocketVoiceState state2)
@@ -371,6 +374,173 @@ namespace botof37s.services
             {
                 Console.WriteLine(ex.Message);
                 Console.WriteLine($"- {ex.StackTrace}");
+            }
+        }
+        private async Task Autoroll(string token)
+        {
+            if (File.Exists($"wheelspoof/{token}")) return;
+            if (File.Exists($"wheelspoof/autoroll/{_config["AdminUserID"]}.37"))
+            {
+                DateTime lastwin = DateTime.Parse(File.ReadAllText($"wheelspoof/autoroll/{_config["AdminUserID"]}.37"));
+                TimeSpan ts = DateTime.UtcNow - lastwin;
+                if(ts.TotalHours < 22)
+                {
+                    return;
+                } 
+            }
+            await File.WriteAllTextAsync($"wheelspoof/{token}", "uwu");
+            var user = _client.GetUser(ulong.Parse(_config["AdminUserID"]));
+            user.SendMessageAsync("Autoroll start");
+            try
+            {
+                HttpClient client = new HttpClient();
+                Dictionary<int, int> distrib = new Dictionary<int, int>
+                {
+                { 0, 0 },
+                { 1, 0 },
+                { 2, 0 },
+                { 3, 0 },
+                { 4, 0 },
+                { 5, 0 },
+                { 6, 0 },
+                { 7, 0 },
+                { 8, 0 },
+                { 9, 0 },
+                { 10, 0 },
+                { 11, 0 },
+
+                };
+                List<string> agents = new List<string>()
+                {
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0",
+                "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/5352 (KHTML, like Gecko) Chrome/37.0.825.0 Mobile Safari/5352",
+                "Opera/9.79 (X11; Linux i686; en-US) Presto/2.10.342 Version/10.00",
+                "Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_2 like Mac OS X; en-US) AppleWebKit/532.43.6 (KHTML, like Gecko) Version/3.0.5 Mobile/8B115 Safari/6532.43.6",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
+                };
+                client.DefaultRequestHeaders.Add("Accept", "application / json, text / plain, */*");
+                client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+                client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.5");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+                client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                client.DefaultRequestHeaders.Add("Host", "gamblingbot.app");
+                client.DefaultRequestHeaders.Add("Pragma", "no-cache");
+                client.DefaultRequestHeaders.Add("Referer", "https://gamblingbot.app/games/fortune-wheel");
+                client.DefaultRequestHeaders.Add("User-Agent", agents[new Random().Next(agents.Count())]);
+                DateTime start = DateTime.UtcNow;
+                bool mil = false;
+                bool startconfirmation = false;
+                HttpResponseMessage cooldownresponse = await client.GetAsync("https://gamblingbot.app/api/games/fortune-wheel-free-cooldown");
+                if (await cooldownresponse.Content.ReadAsStringAsync() == "invalid user")
+                {
+                    await user.SendMessageAsync($"Your token expired again you dingus!");
+                    Console.WriteLine("Invalid free cooldown");
+                    if (File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
+                    if (File.Exists($"wheelspoof/tokens/{user.Id}.37")) File.Delete($"wheelspoof/tokens/{user.Id}.37");
+                    return;
+                }
+                else
+                {
+                    DateTimeOffset unixstart = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(await cooldownresponse.Content.ReadAsStringAsync()));
+                    unixstart = unixstart.AddHours(22);
+                    if (DateTime.UtcNow.CompareTo(unixstart.UtcDateTime) < 0)
+                    {   
+                        if (File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
+                        return;
+                    }
+                }
+                int failedrequests = 0;
+                while (!mil)
+                {
+                    HttpResponseMessage response = await client.GetAsync($"https://gamblingbot.app/api/games/fortune-wheel-start");
+                    string responsestring = await response.Content.ReadAsStringAsync();
+
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        failedrequests = 0;
+                        if (responsestring == "invalid user")
+                        {
+                            await user.SendMessageAsync($"<@{user.Id}> The allmighty bot didnt like that one. This may be because your token has expired or because the gambling bot is having technical difficulties.");
+                            if (File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
+                            return;
+                        }
+                        if (!startconfirmation)
+                        {
+                            string confirmationresponse = $"<@{user.Id}> I have started up the automatic spin feature for you.";
+                            startconfirmation = true;
+                            await user.SendMessageAsync(confirmationresponse);
+                        }
+                        try
+                        {
+
+                            int key = int.Parse(responsestring.Replace("{\"win\":", "").Replace("}", ""));
+                            distrib[key]++;
+                        }
+                        catch (FormatException)
+                        {
+                            int counter = 0;
+                            foreach (KeyValuePair<int, int> kvp in distrib)
+                            {
+                                counter += kvp.Value;
+                            }
+                            TimeSpan temp = DateTime.UtcNow - start;
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"{DateTime.UtcNow}: Error in autoroll wheel response for {user.Username}#{user.Discriminator}: \"{responsestring}\"");
+                            Console.ResetColor();
+                            lservice.LogAsync($"Invalid Response: \"{responsestring}\"", LogLevel.Severe);
+                            await user.SendMessageAsync($"<@{user.Id}> Autoroll: Oops, i didnt expect the following response after {counter} rolls and {temp.Hours}h {temp.Minutes}m {temp.Seconds}s: \"{responsestring}\" Please contact my owner with this information or try again");
+                            File.Delete($"wheelspoof/{token}");
+                            return;
+                        }
+                        if (responsestring == "{\"win\":0}")
+                        {
+                            mil = true;
+                            await Task.Delay(7000);
+                        }
+                    }
+                    else
+                    {
+                        if (failedrequests < 10)
+                        {
+                            failedrequests++;
+                        }
+                        else
+                        {
+                            int counter = 0;
+                            foreach (KeyValuePair<int, int> kvp in distrib)
+                            {
+                                counter += kvp.Value;
+                            }
+                            TimeSpan temp = DateTime.UtcNow - start;
+                            await user.SendMessageAsync($"<@{user.Id}> Autowheel: I'm sorry, but the last 10 requests failed after {counter} sucessfull rolls and a time of {temp.Hours} hours and {temp.Minutes} minutes. The last request failed with the status code \"{response.StatusCode}\" and the response \"{responsestring}\". Please contact my owner with this info or try again later. ");
+                            File.Delete($"wheelspoof/{token}");
+                            return;
+                        }
+                    }
+                    await Task.Delay(5000 + new Random().Next(-1000, 1000));
+                }
+                HttpResponseMessage winresponse = await client.GetAsync($"https://gamblingbot.app/api/games/fortune-wheel-ok");
+                TimeSpan ts = DateTime.UtcNow - start;
+                WebClient web = new WebClient();
+                Stream stream = web.OpenRead($"https://quickchart.io/chart?bkg=white&c={{type:'bar',data:{{labels:['10,000,000','9,000','45,000','11,500','450,000','15,000','60,000','20,000','250,000','30,000','120,000','6,000'],datasets:[{{ label:'Times rolled',data:[{distrib[0]},{distrib[1]},{distrib[2]},{distrib[3]},1{distrib[4]},{distrib[5]},{distrib[6]},{distrib[7]},{distrib[8]},{distrib[9]},{distrib[10]},{distrib[11]}]}}]}}}}");
+                Bitmap bitmap = new Bitmap(stream);
+                bitmap.Save($"wheelspoof/barcharts/{user.Id}.png", System.Drawing.Imaging.ImageFormat.Png);
+                File.Delete($"wheelspoof/{token}");
+                int finalcounter = 0;
+                foreach (KeyValuePair<int, int> kvp in distrib)
+                {
+                    finalcounter += kvp.Value;
+                }
+                File.WriteAllText($"wheelspoof/autoroll/{user.Id}.37", DateTime.UtcNow.ToString());
+                await user.SendMessageAsync($"<@{user.Id}> Autoroll: Success! After {ts.Hours} hours, {ts.Minutes} minutes, {ts.Seconds} seconds and {finalcounter} rolls I have managed to make a winning roll! Raw response: \"{await winresponse.Content.ReadAsStringAsync()}\"  Distribution chart: ");
+                await user.SendFileAsync($"wheelspoof/barcharts/{user.Id}.png");
+                File.Delete($"wheelspoof/barcharts/{user.Id}.png");
+            }
+            catch (Exception e)
+            {
+                if (File.Exists($"wheelspoof/{token}")) File.Delete($"wheelspoof/{token}");
+                await user.SendMessageAsync($"Autoroll fail: {e}");
             }
         }
     }

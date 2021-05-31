@@ -245,6 +245,7 @@ namespace botof37s.Modules
                 {
                     finalcounter += kvp.Value;
                 }
+                File.WriteAllText($"wheelspoof/autoroll/{Context.User.Id}.37", DateTime.UtcNow.ToString());
                 await Context.Channel.SendMessageAsync($"<@{Context.User.Id}> Success! After {ts.Hours} hours, {ts.Minutes} minutes, {ts.Seconds} seconds and {finalcounter} rolls I have managed to make a winning roll! Raw response: \"{await winresponse.Content.ReadAsStringAsync()}\"  Distribution chart: ");
                 await Context.Channel.SendFileAsync($"wheelspoof/barcharts/{Context.Message.Id}.png");
                 File.Delete($"wheelspoof/barcharts/{Context.Message.Id}.png");
