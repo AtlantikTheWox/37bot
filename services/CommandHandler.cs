@@ -396,7 +396,6 @@ namespace botof37s.services
             }
             await File.WriteAllTextAsync($"wheelspoof/{token}", "uwu");
             var user = _client.GetUser(ulong.Parse(_config["AdminUserID"]));
-            user.SendMessageAsync("Autoroll start");
             try
             {
                 HttpClient client = new HttpClient();
