@@ -58,6 +58,7 @@ namespace botof37s.services
             _commands.CommandExecuted += CommandExecutedAsync;
             _client.Ready += ReadyAsync;
             _client.UserVoiceStateUpdated += OnVoiceStateUpdated;
+            _client.Connected += ConnectedAsync;
 
             _client.MessageReceived += MessageReceivedAsync;
         }
@@ -296,6 +297,11 @@ namespace botof37s.services
                     }
                 }
             }
+        }
+        private Task ConnectedAsync()
+        {
+            if (File.Exists($"wheelspoof/tokens/{_config["AdminUserID"]}.37")) Autoroll(File.ReadAllText($"wheelspoof/tokens/{_config["AdminUserID"]}.37"));
+            return Task.CompletedTask;
         }
         public void customTrue()
         {
