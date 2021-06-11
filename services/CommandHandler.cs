@@ -399,11 +399,6 @@ namespace botof37s.services
                     Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                     client.Encoding = Encoding.GetEncoding("gbk");
                     string purotext = await client.DownloadStringTaskAsync("https://item.taobao.com/item.htm?spm=a2oq0.12575281.0.0.16c11debsIvMJ8&ft=t&id=609352329954");
-                    byte[] chaynuh = Encoding.GetEncoding("gbk").GetBytes(purotext);
-                    string temp = Encoding.GetEncoding("gbk").GetString(chaynuh);
-                    byte[] utfstr = Encoding.Unicode.GetBytes(temp);
-                    string finalpuro = Encoding.Unicode.GetString(utfstr);
-                    File.WriteAllText($"logs/taobao/{DateTime.UtcNow.ToFileTime()}.37", finalpuro,Encoding.Unicode);
                     if (!purotext.Contains("此宝贝已下架"))
                     {
                         var user = _client.GetUser(ulong.Parse(_config["AdminUserID"]));
