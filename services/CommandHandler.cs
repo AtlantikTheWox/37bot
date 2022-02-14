@@ -301,7 +301,6 @@ namespace botof37s.services
         private Task ConnectedAsync()
         {
             if (File.Exists($"wheelspoof/tokens/{_config["AdminUserID"]}.37")) Autoroll(File.ReadAllText($"wheelspoof/tokens/{_config["AdminUserID"]}.37"));
-            Puro();
             return Task.CompletedTask;
         }
         public void customTrue()
@@ -381,38 +380,6 @@ namespace botof37s.services
             {
                 Console.WriteLine(ex.Message);
                 Console.WriteLine($"- {ex.StackTrace}");
-            }
-        }
-        private async Task Puro()
-        {
-            try
-            {
-                DateTime lastpuro = new DateTime();
-                if (File.Exists("db/lastpuro.37"))
-                {
-                    lastpuro = DateTime.Parse(File.ReadAllText("db/lastpuro.37"));
-                }
-                TimeSpan ts = DateTime.UtcNow - lastpuro;
-                if (ts.TotalHours > 6)
-                {
-                    WebClient client = new WebClient();
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                    client.Encoding = Encoding.GetEncoding("gbk");
-                    string purotext = await client.DownloadStringTaskAsync("https://item.taobao.com/item.htm?spm=a2oq0.12575281.0.0.16c11debsIvMJ8&ft=t&id=609352329954");
-                    if (!purotext.Contains("此宝贝已下架"))
-                    {
-                        var user = _client.GetUser(ulong.Parse(_config["AdminUserID"]));
-                        var simmo = _client.GetUser(262245466895417344);
-                        await user.SendMessageAsync("P U R O  <https://item.taobao.com/item.htm?spm=a2oq0.12575281.0.0.16c11debsIvMJ8&ft=t&id=609352329954>");
-                        await simmo.SendMessageAsync("goo boy");
-                        File.WriteAllText("db/lastpuro.37", DateTime.MaxValue.ToString());
-                    }
-                    _ = client;
-                    File.WriteAllText("db/lastpuro.37", DateTime.UtcNow.ToString());
-                }
-            }catch(Exception e)
-            {
-                Console.WriteLine(e);
             }
         }
         private async Task Autoroll(string token)
